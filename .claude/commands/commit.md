@@ -19,7 +19,7 @@ Before committing:
 
 4. Also suggest any files/folders to be included in .gitignore file.
 
-5. Stage the intended files using `git add .`.
+5. Stage the intended files using `git add .`
 
 6. Suggest a clear commit message in imperative mood, e.g.
    "Add <Entity> data model and Fiori Elements list report".

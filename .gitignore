@@ -9,6 +9,7 @@ gen/
 node_modules/
 target/
 .claude/settings.local.json
+claude_sessions/
 
 # Web IDE, App Studio
 .che/
