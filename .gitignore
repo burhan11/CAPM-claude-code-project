@@ -19,6 +19,14 @@ target/
 *.mtar
 mta_archives/
 
+# Local env
+.env
+.env.*
+
+# Build / coverage output
+dist/
+coverage/
+
 # Other
 .DS_Store
 *.orig
