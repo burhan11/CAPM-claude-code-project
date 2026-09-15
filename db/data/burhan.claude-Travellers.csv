@@ -1,0 +1,11 @@
+ID;userName;firstName;lastName;gender;age;status_code;createdBy;createdAt;modifiedAt
+10000000-0000-4000-8000-000000000001;rohan.sharma;Rohan;Sharma;Male;29;A;rohan.sharma@travelapp.com;2026-01-15T09:30:00Z;2026-01-15T09:30:00Z
+10000000-0000-4000-8000-000000000002;emily.johnson;Emily;Johnson;Female;34;A;emily.johnson@travelapp.com;2026-01-20T10:15:00Z;2026-02-01T14:20:00Z
+10000000-0000-4000-8000-000000000003;hans.mueller;Hans;Mueller;Male;45;A;hans.mueller@travelapp.com;2026-02-05T08:00:00Z;2026-02-05T08:00:00Z
+10000000-0000-4000-8000-000000000004;sofia.rossi;Sofia;Rossi;Female;27;A;sofia.rossi@travelapp.com;2026-02-10T11:45:00Z;2026-03-01T09:00:00Z
+10000000-0000-4000-8000-000000000005;wei.chen;Wei;Chen;Male;38;I;wei.chen@travelapp.com;2026-02-15T13:20:00Z;2026-04-10T16:30:00Z
+10000000-0000-4000-8000-000000000006;aiko.tanaka;Aiko;Tanaka;Female;31;A;aiko.tanaka@travelapp.com;2026-03-01T07:50:00Z;2026-03-01T07:50:00Z
+10000000-0000-4000-8000-000000000007;carlos.garcia;Carlos;Garcia;Male;52;A;carlos.garcia@travelapp.com;2026-03-10T12:00:00Z;2026-03-15T10:10:00Z
+10000000-0000-4000-8000-000000000008;priya.patel;Priya;Patel;Female;24;A;priya.patel@travelapp.com;2026-03-18T09:25:00Z;2026-03-18T09:25:00Z
+10000000-0000-4000-8000-000000000009;james.smith;James;Smith;Male;60;I;james.smith@travelapp.com;2026-03-22T15:40:00Z;2026-05-01T11:00:00Z
+10000000-0000-4000-8000-000000000010;fatima.alfarsi;Fatima;Al-Farsi;Female;41;A;fatima.alfarsi@travelapp.com;2026-04-01T08:10:00Z;2026-04-01T08:10:00Z

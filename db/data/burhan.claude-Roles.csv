@@ -1,0 +1,4 @@
+code;name;descr
+ADMIN;Administrator;Full system access
+TRAVELLER;Traveller;Self-service traveller access
+AGENT;Travel Agent;Agent access for managing travellers
