@@ -1,0 +1,437 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --or1:#FF4500;--or2:#FF6B35;--or3:#FF8C42;--or4:#FFA559;--or5:#FFB347;
+  --dark:#0D0D1A;--surface:#13131F;--card:#1A1A2E;--border:#252540;
+  --border2:#303055;--text:#F0F0FF;--muted:#7070A0;--faint:#3A3A60;
+}
+body{background:var(--dark);font-family:var(--font-sans);color:var(--text);min-height:100vh}
+
+.brand-header{
+  background:linear-gradient(135deg,#0D0D1A 0%,#1A0A05 50%,#0D0D1A 100%);
+  border-bottom:1px solid var(--border2);
+  padding:14px 20px;display:flex;align-items:center;gap:14px;margin-bottom:0;
+  position:relative;overflow:hidden;
+}
+.brand-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(255,107,53,0.06),transparent);
+  pointer-events:none;
+}
+.brand-header::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--or2),var(--or3),var(--or2),transparent);
+}
+.logo-ring{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--or1),var(--or3),var(--or5));
+  padding:2px;flex-shrink:0;
+}
+.logo-ring img{width:100%;height:100%;border-radius:50%;display:block;object-fit:cover;background:#1a1a2e}
+.brand-text{}
+.brand-name{font-size:15px;font-weight:500;background:linear-gradient(90deg,var(--or2),var(--or4),#FFD580);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.02em}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:1px;letter-spacing:0.04em}
+.brand-badge{margin-left:auto;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:linear-gradient(90deg,var(--or1),var(--or3));color:#fff;letter-spacing:0.05em}
+
+.wrap{padding:0 0 2rem}
+
+.tab-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 20px;display:flex;gap:2px;overflow-x:auto;
+}
+.tab{
+  padding:11px 16px;font-size:12px;font-weight:500;cursor:pointer;
+  border:none;background:transparent;color:var(--muted);
+  border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.15s;
+  display:flex;align-items:center;gap:6px;letter-spacing:0.02em;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--or3);border-bottom-color:var(--or3)}
+.tab i{font-size:14px}
+
+.panel{display:none;padding:20px}
+.panel.visible{display:block}
+
+.section-head{
+  font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.field-grid.one{grid-template-columns:1fr}
+.field-grid.three{grid-template-columns:1fr 1fr 1fr}
+
+.field label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:0.03em}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--card);border:1px solid var(--border2);
+  border-radius:6px;padding:8px 11px;font-size:12px;font-family:var(--font-mono);
+  color:var(--text);outline:none;transition:border-color 0.15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--or2)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237070A0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.field textarea{min-height:72px;resize:vertical;line-height:1.6}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  display:flex;align-items:center;gap:5px;padding:5px 11px;
+  border:1px solid var(--border2);border-radius:20px;cursor:pointer;
+  font-size:11px;color:var(--muted);background:var(--card);
+  transition:all 0.15s;user-select:none;
+}
+.chip:hover{border-color:var(--or2);color:var(--or3)}
+.chip.on{
+  background:linear-gradient(90deg,rgba(255,69,0,0.18),rgba(255,107,53,0.12));
+  border-color:var(--or2);color:var(--or3);
+}
+.chip input{display:none}
+.chip i{font-size:12px}
+
+.sub-label{font-size:11px;color:var(--muted);margin:12px 0 7px;letter-spacing:0.03em}
+
+.preview-wrap{
+  background:var(--surface);border:1px solid var(--border2);border-radius:8px;
+  overflow:hidden;
+}
+.preview-toolbar{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:8px 14px;display:flex;align-items:center;gap:8px;
+}
+.preview-toolbar span{font-size:11px;color:var(--muted);flex:1;font-family:var(--font-mono)}
+.preview-body{
+  padding:16px;font-family:var(--font-mono);font-size:11.5px;line-height:1.8;
+  white-space:pre-wrap;color:#C8C8E8;max-height:420px;overflow-y:auto;
+}
+.preview-body .h1{color:var(--or3);font-weight:500}
+.preview-body .h2{color:var(--or4);font-weight:500}
+.preview-body .key{color:#7DCFFF}
+.preview-body .val{color:#A8FF78}
+
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn-primary{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(90deg,var(--or1),var(--or3));
+  color:#fff;border:none;border-radius:6px;padding:9px 20px;
+  font-size:12px;font-weight:500;cursor:pointer;letter-spacing:0.03em;
+  transition:opacity 0.15s;
+}
+.btn-primary:hover{opacity:0.88}
+.btn-secondary{
+  display:flex;align-items:center;gap:7px;
+  background:transparent;color:var(--muted);
+  border:1px solid var(--border2);border-radius:6px;
+  padding:9px 18px;font-size:12px;cursor:pointer;transition:all 0.15s;
+}
+.btn-secondary:hover{border-color:var(--or2);color:var(--or3)}
+.toast{font-size:11px;color:var(--or3);padding:8px 0;display:none}
+.toast.show{display:block}
+
+.cmd-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.cmd-label{font-size:11px;color:var(--muted);width:120px;flex-shrink:0}
+.cmd-val{flex:1}
+
+.info-strip{
+  background:linear-gradient(90deg,rgba(255,69,0,0.08),rgba(255,107,53,0.04));
+  border:1px solid rgba(255,107,53,0.2);border-radius:6px;
+  padding:8px 12px;font-size:11px;color:var(--or4);
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
+}
+</style>
+
+<div class="brand-header">
+  <div class="brand-text">
+    <div class="brand-sub">SAP BTP · CAP · Cloud Native</div>
+  </div>
+  <div class="brand-badge">CLAUDE.md</div>
+</div>
+
+<div class="wrap">
+  <div class="tab-bar">
+    <button class="tab active" data-tab="arch"><i class="ti ti-layout-grid" aria-hidden="true"></i>Architecture</button>
+    <button class="tab" data-tab="style"><i class="ti ti-code" aria-hidden="true"></i>Code style</button>
+    <button class="tab" data-tab="libs"><i class="ti ti-package" aria-hidden="true"></i>Libraries</button>
+    <button class="tab" data-tab="cmds"><i class="ti ti-terminal" aria-hidden="true"></i>Commands</button>
+    <button class="tab" data-tab="rules"><i class="ti ti-shield" aria-hidden="true"></i>Critical rules</button>
+    <button class="tab" data-tab="const"><i class="ti ti-adjustments" aria-hidden="true"></i>Constraints</button>
+    <button class="tab" data-tab="prev"><i class="ti ti-eye" aria-hidden="true"></i>Preview</button>
+  </div>
+
+  <div class="panel visible" id="tab-arch">
+    <div class="info-strip"><i class="ti ti-info-circle" aria-hidden="true"></i>Define your project structure so Claude always places files in the right directory.</div>
+    <div class="section-head">Project info</div>
+    <div class="field-grid">
+      <div class="field"><label>Project name</label><input type="text" id="proj-name" placeholder="my-btp-cap-app"/></div>
+      <div class="field"><label>BTP runtime</label><select id="btp-runtime"><option>Cloud Foundry</option><option>Kyma / Kubernetes</option><option>Both</option></select></div>
+    </div>
+    <div class="section-head">Directory mapping</div>
+    <div class="field-grid">
+      <div class="field"><label><i class="ti ti-database" aria-hidden="true" style="font-size:12px;margin-right:4px"></i>db/ — database layer</label><input type="text" id="db-dir" placeholder="CDS models, schema.cds, CSV seed data"/></div>
+      <div class="field"><label><i class="ti ti-server" aria-hidden="true" style="font-size:12px;margin-right:4px"></i>srv/ — service layer</label><input type="text" id="srv-dir" placeholder="CAP services, handlers, .cds files"/></div>
+    </div>
+    <div class="field-grid three">
+      <div class="field"><label>app/ — UI layer</label><input type="text" id="app-dir" placeholder="Fiori / UI5 apps"/></div>
+      <div class="field"><label>Config files</label><input type="text" id="cfg-dir" placeholder=".cdsrc.json, mta.yaml"/></div>
+      <div class="field"><label>test/ — tests</label><input type="text" id="test-dir" placeholder="Jest unit tests"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Extra directories (comma-separated)</label><input type="text" id="extra-dirs" placeholder="handlers/, plugins/, utils/"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Architecture notes</label><textarea id="arch-notes" placeholder="e.g. All DB access via CAP OData layer only. No raw SQL. Services follow single-responsibility."></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-style">
+    <div class="section-head">Language & formatting</div>
+    <div class="field-grid">
+      <div class="field"><label>Language</label><select id="lang"><option>JavaScript (Node.js)</option><option>TypeScript</option><option>Java (Spring)</option></select></div>
+      <div class="field"><label>Indent</label><select id="indent"><option>2 spaces</option><option>4 spaces</option><option>tabs</option></select></div>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Quotes</label><select id="quotes"><option>single</option><option>double</option></select></div>
+      <div class="field"><label>Semicolons</label><select id="semis"><option>yes</option><option>no</option></select></div>
+    </div>
+    <div class="section-head">Conventions</div>
+    <div class="field-grid one">
+      <div class="field"><label>Naming conventions</label><input type="text" id="naming" placeholder="CDS entities PascalCase, JS handlers camelCase, constants UPPER_SNAKE_CASE"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Error handling pattern</label><input type="text" id="error-pattern" placeholder="Use req.error() for user-facing errors, cds.log() for diagnostics"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Additional style rules</label><textarea id="style-notes" placeholder="e.g. No console.log in production — use cds.log()&#10;Async/await preferred over .then chains"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-libs">
+    <div class="section-head">SAP / BTP packages</div>
+    <div class="chips" id="sap-libs">
+      <label class="chip on"><input type="checkbox" checked value="@sap/cds"/><i class="ti ti-box" aria-hidden="true"></i>@sap/cds</label>
+      <label class="chip on"><input type="checkbox" checked value="@sap/cds-dk"/><i class="ti ti-box" aria-hidden="true"></i>@sap/cds-dk</label>
+      <label class="chip"><input type="checkbox" value="@sap/xssec"/>@sap/xssec</label>
+      <label class="chip"><input type="checkbox" value="@sap/hana-client"/>@sap/hana-client</label>
+      <label class="chip"><input type="checkbox" value="@sap/audit-logging"/>@sap/audit-logging</label>
+      <label class="chip"><input type="checkbox" value="@sap/approuter"/>@sap/approuter</label>
+      <label class="chip"><input type="checkbox" value="@sap/mtxs"/>@sap/mtxs (multitenancy)</label>
+      <label class="chip"><input type="checkbox" value="@sap/cds-fiori"/>@sap/cds-fiori</label>
+    </div>
+    <div class="section-head" style="margin-top:16px">Testing</div>
+    <div class="chips" id="test-libs">
+      <label class="chip on"><input type="checkbox" checked value="jest"/><i class="ti ti-test-pipe" aria-hidden="true"></i>jest</label>
+      <label class="chip"><input type="checkbox" value="@cap-js/cds-test"/>@cap-js/cds-test</label>
+      <label class="chip"><input type="checkbox" value="supertest"/>supertest</label>
+      <label class="chip"><input type="checkbox" value="sinon"/>sinon</label>
+    </div>
+    <div class="section-head" style="margin-top:16px">Linting / DX</div>
+    <div class="chips" id="lint-libs">
+      <label class="chip on"><input type="checkbox" checked value="eslint"/>eslint</label>
+      <label class="chip"><input type="checkbox" value="prettier"/>prettier</label>
+      <label class="chip"><input type="checkbox" value="husky"/>husky</label>
+      <label class="chip"><input type="checkbox" value="lint-staged"/>lint-staged</label>
+    </div>
+    <div class="field-grid one" style="margin-top:14px">
+      <div class="field"><label>Additional packages (comma-separated)</label><input type="text" id="extra-libs" placeholder="axios, lodash, uuid"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label><i class="ti ti-ban" aria-hidden="true" style="font-size:12px;margin-right:4px;color:#E24B4A"></i>Libraries to AVOID</label><input type="text" id="avoid-libs" placeholder="sequelize, knex — raw SQL not allowed"/></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-cmds">
+    <div class="info-strip"><i class="ti ti-terminal-2" aria-hidden="true"></i>All commands Claude should know for this project.</div>
+    <div class="section-head">Core commands</div>
+    <div class="field-grid">
+      <div class="field"><label>Dev server</label><input type="text" id="cmd-run" value="cds watch"/></div>
+      <div class="field"><label>Hybrid / mock auth</label><input type="text" id="cmd-mock" value="cds watch --profile hybrid"/></div>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Build</label><input type="text" id="cmd-build" value="cds build --production"/></div>
+      <div class="field"><label>MTA build</label><input type="text" id="cmd-mta" value="mbt build -t gen --mtar my-app.mtar"/></div>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Test</label><input type="text" id="cmd-test" value="npm test"/></div>
+      <div class="field"><label>Deploy (CF)</label><input type="text" id="cmd-deploy" value="cf deploy gen/my-app.mtar"/></div>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Lint</label><input type="text" id="cmd-lint" value="npm run lint"/></div>
+      <div class="field"><label>Add CDS features</label><input type="text" id="cmd-add" value="cds add hana,xsuaa,approuter"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Additional commands (one per line — label: command)</label><textarea id="extra-cmds" placeholder="migrate: cds deploy --to hana&#10;hybrid: cds bind -2 my-service&#10;openapi: cds compile --to openapi"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-rules">
+    <div class="info-strip"><i class="ti ti-alert-triangle" aria-hidden="true"></i>These are hard rules Claude must never violate in this codebase.</div>
+    <div class="section-head">Select rules</div>
+    <div class="chips" id="rule-chips">
+      <label class="chip on"><input type="checkbox" checked value="Never bypass the CAP OData layer — no raw SQL or direct DB calls"/><i class="ti ti-database-off" aria-hidden="true"></i>No raw SQL</label>
+      <label class="chip on"><input type="checkbox" checked value="All entity-level access control via @restrict annotations in .cds files, not in handlers"/><i class="ti ti-lock" aria-hidden="true"></i>@restrict in CDS</label>
+      <label class="chip on"><input type="checkbox" checked value="Service handlers go in srv/handlers/, never inline in .cds files"/><i class="ti ti-folder" aria-hidden="true"></i>Handlers in srv/handlers/</label>
+      <label class="chip"><input type="checkbox" value="Always use req.user for identity — never trust client-provided user fields"/><i class="ti ti-user-check" aria-hidden="true"></i>Trust req.user only</label>
+      <label class="chip"><input type="checkbox" value="Never commit .env files, default-env.json, or service keys"/><i class="ti ti-key" aria-hidden="true"></i>No secrets in repo</label>
+      <label class="chip"><input type="checkbox" value="All external API calls wrapped in try/catch with cds.log for errors"/>Wrap external calls</label>
+      <label class="chip"><input type="checkbox" value="UI5/Fiori apps communicate only via CAP service endpoints — no direct HANA access from frontend"/>UI only via CAP</label>
+      <label class="chip"><input type="checkbox" value="Always run cds lint before committing CDS model changes"/>cds lint on commit</label>
+      <label class="chip"><input type="checkbox" value="Multitenancy: tenant isolation enforced via @sap/mtxs — never share DB connections across tenants"/>MT isolation</label>
+      <label class="chip"><input type="checkbox" value="Feature flags controlled via BTP Feature Flags service, not hardcoded env vars"/>Feature flags via BTP</label>
+    </div>
+    <div class="field-grid one" style="margin-top:14px">
+      <div class="field"><label>Custom rules (one per line)</label><textarea id="custom-rules" placeholder="e.g. All date fields must use UTC — never local time&#10;GDPR: PII fields annotated with @PersonalData"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-const">
+    <div class="section-head">Runtime versions</div>
+    <div class="field-grid">
+      <div class="field"><label>Node.js version</label><input type="text" id="node-ver" placeholder="18.x LTS"/></div>
+      <div class="field"><label>@sap/cds version</label><input type="text" id="cds-ver" placeholder="^7.x"/></div>
+    </div>
+    <div class="section-head">Infrastructure</div>
+    <div class="field-grid">
+      <div class="field"><label>Database</label><select id="db-type"><option>SAP HANA Cloud</option><option>SQLite (dev only)</option><option>HANA Cloud + SQLite (dev)</option><option>PostgreSQL</option></select></div>
+      <div class="field"><label>Auth provider</label><select id="auth-type"><option>XSUAA (BTP)</option><option>IAS (Identity Auth Service)</option><option>Mock (dev only)</option><option>XSUAA + IAS</option></select></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Browser / UI targets</label><input type="text" id="browser-target" placeholder="Chrome 110+, Edge 110+ (Fiori launchpad)"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Performance requirements</label><input type="text" id="perf-req" placeholder="OData reads &lt;500ms for lists up to 1000 records"/></div>
+    </div>
+    <div class="field-grid one">
+      <div class="field"><label>Additional constraints</label><textarea id="extra-constraints" placeholder="e.g. GDPR: PII fields must be annotated with @PersonalData&#10;All services must generate OpenAPI spec via cds compile --to openapi"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-prev">
+    <div class="preview-wrap">
+      <div class="preview-toolbar">
+        <i class="ti ti-file-text" aria-hidden="true" style="font-size:14px;color:#FF8C42"></i>
+        <span>CLAUDE.md — generated output</span>
+        <button class="btn-secondary" style="padding:4px 12px;font-size:11px" onclick="generatePreview()"><i class="ti ti-refresh" aria-hidden="true"></i> Refresh</button>
+      </div>
+      <div class="preview-body" id="preview-output">Click "Generate" below to build your CLAUDE.md</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="generatePreview()"><i class="ti ti-wand" aria-hidden="true"></i>Generate</button>
+      <button class="btn-secondary" onclick="copyMd()"><i class="ti ti-copy" aria-hidden="true"></i>Copy markdown</button>
+    </div>
+    <div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> Copied to clipboard!</div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('visible'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('visible');
+    if(t.dataset.tab==='prev') generatePreview();
+  });
+});
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>c.classList.toggle('on'));
+});
+
+function v(id){return document.getElementById(id).value.trim()}
+function checked(cid){return[...document.querySelectorAll('#'+cid+' .chip.on input')].map(i=>i.value)}
+
+function generatePreview(){
+  const name=v('proj-name')||'my-btp-cap-app';
+  const runtime=v('btp-runtime');
+  const extra=v('extra-dirs').split(',').map(s=>s.trim()).filter(Boolean);
+  const archNotes=v('arch-notes');
+  const styleNotes=v('style-notes');
+  const sapLibs=checked('sap-libs');
+  const testLibs=checked('test-libs');
+  const lintLibs=checked('lint-libs');
+  const avoidLibs=v('avoid-libs');
+  const extraLibs=v('extra-libs').split(',').map(s=>s.trim()).filter(Boolean);
+  const rules=checked('rule-chips');
+  const customRules=v('custom-rules').split('\n').map(s=>s.trim()).filter(Boolean);
+  const extraConstraints=v('extra-constraints').split('\n').map(s=>s.trim()).filter(Boolean);
+  const extraCmds=v('extra-cmds').split('\n').map(s=>s.trim()).filter(Boolean);
+
+  let md='';
+  md+=`# CLAUDE.md — ${name}\n`;
+  md+=`# BTP CAP Project  •  ${runtime}\n`;
+  md+=`# Generated CLAUDE.md Builder\n\n`;
+
+  md+=`## Architecture\n\n`;
+  md+=`### Directory structure\n\n\`\`\`\n${name}/\n`;
+  md+=`├── db/          # ${v('db-dir')||'CDS data models, schema.cds, CSV seed data'}\n`;
+  md+=`├── srv/         # ${v('srv-dir')||'CAP service definitions and Node.js handlers'}\n`;
+  md+=`├── app/         # ${v('app-dir')||'Fiori Elements / UI5 frontend apps'}\n`;
+  md+=`├── test/        # ${v('test-dir')||'Jest unit and integration tests'}\n`;
+  md+=`└── (config)     # ${v('cfg-dir')||'.cdsrc.json, mta.yaml, package.json'}\n`;
+  extra.forEach(d=>{md+=`    ${d}\n`;});
+  md+=`\`\`\`\n\n`;
+  if(archNotes) archNotes.split('\n').forEach(l=>{if(l.trim()) md+=`- ${l.trim()}\n`;});
+  md+='\n';
+
+  md+=`## Code Style\n\n`;
+  md+=`- **Language**: ${v('lang')}\n`;
+  md+=`- **Indent**: ${v('indent')}\n`;
+  md+=`- **Quotes**: ${v('quotes')}\n`;
+  md+=`- **Semicolons**: ${v('semis')}\n`;
+  md+=`- **Naming**: ${v('naming')||'CDS entities PascalCase, JS handlers camelCase, constants UPPER_SNAKE_CASE'}\n`;
+  md+=`- **Error handling**: ${v('error-pattern')||'req.error() for user-facing errors, cds.log() for diagnostics'}\n`;
+  if(styleNotes) styleNotes.split('\n').forEach(l=>{if(l.trim()) md+=`- ${l.trim()}\n`;});
+  md+='\n';
+
+  md+=`## Preferred Libraries\n\n`;
+  if(sapLibs.length){md+=`### SAP / BTP\n`;sapLibs.forEach(l=>{md+=`- \`${l}\`\n`;});md+='\n';}
+  if(testLibs.length){md+=`### Testing\n`;testLibs.forEach(l=>{md+=`- \`${l}\`\n`;});md+='\n';}
+  if(lintLibs.length){md+=`### Linting / DX\n`;lintLibs.forEach(l=>{md+=`- \`${l}\`\n`;});md+='\n';}
+  if(extraLibs.length){md+=`### Utilities\n`;extraLibs.forEach(l=>{md+=`- \`${l}\`\n`;});md+='\n';}
+  if(avoidLibs){md+=`### Do NOT use\n- ${avoidLibs}\n\n`;}
+
+  md+=`## Commands\n\n`;
+  md+=`| Purpose | Command |\n|---|---|\n`;
+  [['Dev server',v('cmd-run')||'cds watch'],
+   ['Hybrid / mock auth',v('cmd-mock')||'cds watch --profile hybrid'],
+   ['Build',v('cmd-build')||'cds build --production'],
+   ['MTA build',v('cmd-mta')||'mbt build -t gen'],
+   ['Test',v('cmd-test')||'npm test'],
+   ['Deploy',v('cmd-deploy')||'cf deploy gen/*.mtar'],
+   ['Lint',v('cmd-lint')||'npm run lint'],
+   ['Add features',v('cmd-add')||'cds add hana,xsuaa'],
+  ].forEach(([l,c])=>{if(c) md+=`| ${l} | \`${c}\` |\n`;});
+  extraCmds.forEach(line=>{
+    const[label,...rest]=line.split(':');
+    if(rest.length) md+=`| ${label.trim()} | \`${rest.join(':').trim()}\` |\n`;
+  });
+  md+='\n';
+
+  const allRules=[...rules,...customRules];
+  if(allRules.length){
+    md+=`## Critical Rules\n\n`;
+    allRules.forEach(r=>{md+=`- ⚠️  ${r}\n`;});
+    md+='\n';
+  }
+
+  md+=`## Technical Constraints\n\n`;
+  md+=`- **Node.js**: ${v('node-ver')||'18.x LTS'}\n`;
+  md+=`- **@sap/cds**: ${v('cds-ver')||'^7.x'}\n`;
+  md+=`- **Database**: ${v('db-type')}\n`;
+  md+=`- **Auth**: ${v('auth-type')}\n`;
+  if(v('browser-target')) md+=`- **Browser targets**: ${v('browser-target')}\n`;
+  if(v('perf-req')) md+=`- **Performance**: ${v('perf-req')}\n`;
+  extraConstraints.forEach(c=>{md+=`- ${c}\n`;});
+
+  window._md=md;
+  document.getElementById('preview-output').textContent=md;
+}
+
+function copyMd(){
+  if(!window._md) generatePreview();
+  navigator.clipboard.writeText(window._md).then(()=>{
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  });
+}
+</script>

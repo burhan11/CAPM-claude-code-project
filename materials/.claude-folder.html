@@ -1,0 +1,514 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --or1:#FF4500;--or2:#FF6B35;--or3:#FF8C42;--or4:#FFA559;--or5:#FFB347;
+  --dark:#0D0D1A;--surface:#13131F;--card:#1A1A2E;--border:#252540;
+  --border2:#303055;--text:#F0F0FF;--muted:#7070A0;--faint:#2A2A45;
+  --green:#22C77A;--green-bg:#0A1F14;--blue:#4A9EFF;--blue-bg:#0A1428;
+  --purple:#A78BFA;--purple-bg:#150F28;--amber:#FFB347;--amber-bg:#1F1408;
+  --pink:#F472B6;--pink-bg:#1F0A18;
+}
+body{background:var(--dark);font-family:var(--font-sans);color:var(--text)}
+
+.brand-header{background:linear-gradient(135deg,#0D0D1A 0%,#1A0A05 50%,#0D0D1A 100%);border-bottom:1px solid var(--border2);padding:12px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.brand-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--or2),var(--or3),var(--or2),transparent)}
+.logo-ring{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--or1),var(--or3),var(--or5));padding:2px;flex-shrink:0}
+.logo-ring img{width:100%;height:100%;border-radius:50%;display:block;object-fit:cover;background:#1a1a2e}
+.brand-name{font-size:14px;font-weight:500;background:linear-gradient(90deg,var(--or2),var(--or4),#FFD580);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-sub{font-size:10px;color:var(--muted)}
+.hbadge{margin-left:auto;font-size:10px;font-weight:500;padding:2px 9px;border-radius:20px;background:linear-gradient(90deg,var(--or1),var(--or3));color:#fff;letter-spacing:0.04em}
+
+.nav{display:flex;gap:2px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.ntab{padding:10px 14px;font-size:11.5px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.ntab:hover{color:var(--text)}
+.ntab.active{color:var(--or3);border-bottom-color:var(--or3)}
+.ntab i{font-size:13px}
+
+.view{display:none;padding:20px}
+.view.on{display:block}
+
+.section-title{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cards.one{grid-template-columns:1fr}
+.cards.three{grid-template-columns:1fr 1fr 1fr}
+
+.card{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--or2)}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px}
+.card-title{font-size:13px;font-weight:500;margin-bottom:4px;color:var(--text)}
+.card-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.card-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:12px;margin-top:8px}
+
+.tree{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:var(--font-mono);font-size:12px;line-height:2}
+.tree-line{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.tree-line .folder{color:var(--or3)}
+.tree-line .file{color:var(--blue)}
+.tree-line .comment{color:var(--faint);font-size:10px;margin-left:4px}
+.tree-line.hl .file{color:var(--or3)}
+.tree-line.hl .comment{color:var(--or4)}
+
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px;border:1px solid}
+
+.scope-row{display:flex;gap:10px;margin-bottom:16px}
+.scope-box{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:12px}
+.scope-box .scope-label{font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scope-box .scope-path{font-size:11px;font-family:var(--font-mono);color:var(--or3);margin-bottom:8px}
+.scope-box .scope-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.scope-divider{display:flex;align-items:center;justify-content:center;width:24px;flex-shrink:0;color:var(--muted);font-size:11px}
+
+.detail-panel{background:var(--faint);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:10px;display:none}
+.detail-panel.show{display:block}
+.detail-panel .dtitle{font-size:12px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.detail-panel .drow{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:11px}
+.detail-panel .dkey{color:var(--or4);width:110px;flex-shrink:0;font-family:var(--font-mono)}
+.detail-panel .dval{color:var(--muted);line-height:1.6}
+
+.ex-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--font-mono);font-size:11px;line-height:1.8;color:#C8C8E8;margin-top:8px;white-space:pre}
+.ex-block .c1{color:var(--or3)}
+.ex-block .c2{color:var(--blue)}
+.ex-block .c3{color:var(--green)}
+.ex-block .c4{color:var(--muted)}
+
+.info-row{background:linear-gradient(90deg,rgba(255,69,0,.07),transparent);border:1px solid rgba(255,107,53,.18);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--or4);display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;line-height:1.6}
+
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fnode{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:11px;color:var(--text);display:flex;align-items:center;gap:6px}
+.fnode i{font-size:13px}
+.farr{color:var(--muted);font-size:14px}
+
+.tip{background:var(--card);border-left:2px solid var(--or2);border-radius:0 8px 8px 0;padding:9px 12px;font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.tip b{color:var(--text)}
+</style>
+
+<div class="brand-header">
+  <div class="logo-ring"><img src="https://s2.coinmarketcap.com/static/img/coins/200x200/37581.png" alt="AT" onerror="this.style.display='none'"/></div>
+  <div><div class="brand-name">Anubhav Trainings</div><div class="brand-sub">SAP BTP · CAP · Claude Code</div></div>
+  <div class="hbadge">.claude folder</div>
+</div>
+
+<div class="nav">
+  <button class="ntab active" data-v="overview"><i class="ti ti-folder" aria-hidden="true"></i>Overview</button>
+  <button class="ntab" data-v="claudemd"><i class="ti ti-file-text" aria-hidden="true"></i>CLAUDE.md</button>
+  <button class="ntab" data-v="commands"><i class="ti ti-terminal" aria-hidden="true"></i>Commands</button>
+  <button class="ntab" data-v="rules"><i class="ti ti-shield" aria-hidden="true"></i>Rules</button>
+  <button class="ntab" data-v="agents"><i class="ti ti-robot" aria-hidden="true"></i>Agents</button>
+  <button class="ntab" data-v="skills"><i class="ti ti-puzzle" aria-hidden="true"></i>Skills</button>
+  <button class="ntab" data-v="settings"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+</div>
+
+<!-- OVERVIEW -->
+<div class="view on" id="view-overview">
+  <div class="info-row"><i class="ti ti-info-circle" aria-hidden="true"></i>The <code style="color:var(--or3)">.claude/</code> folder is Claude Code's local config directory. It controls how Claude behaves — either for one project or across every project on your machine.</div>
+
+  <div class="section-title">Directory structure</div>
+  <div class="tree">
+    <div class="tree-line"><span style="color:var(--muted)">~/</span><span class="folder">project-root/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">│ </span><span class="file">CLAUDE.md</span><span class="comment">← main instruction file, read at session start</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│ </span><span class="folder">.claude/</span><span class="comment">← config directory</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">│   ├── </span><span class="file">settings.json</span><span class="comment">← project-level tool & env config</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│   ├── </span><span class="folder">commands/</span><span class="comment">← reusable slash commands</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│   ├── </span><span class="folder">agents/</span><span class="comment">← sub-agent instruction files</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│   └── </span><span class="folder">skills/</span><span class="comment">← modular SKILL.md task guides</span></div>
+    <div class="tree-line" style="margin-top:8px"><span style="color:var(--muted)">~/</span><span class="folder">.claude/</span><span class="comment">← global config (all projects)</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">    ├── </span><span class="file">CLAUDE.md</span><span class="comment">← your personal defaults everywhere</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">    └── </span><span class="file">settings.json</span><span class="comment">← global tool preferences</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:18px">Scope — where configs live</div>
+  <div class="scope-row">
+    <div class="scope-box">
+      <div class="scope-label"><i class="ti ti-world" aria-hidden="true" style="color:var(--blue)"></i>Global</div>
+      <div class="scope-path">~/.claude/</div>
+      <div class="scope-desc">Applies to every project on your machine. Great for personal code style, preferred language, and tools you always want enabled.</div>
+    </div>
+    <div class="scope-divider">+</div>
+    <div class="scope-box" style="border-color:var(--or2)">
+      <div class="scope-label"><i class="ti ti-folder" aria-hidden="true" style="color:var(--or3)"></i>Project</div>
+      <div class="scope-path">./project/.claude/</div>
+      <div class="scope-desc">Applies only inside that project. BTP CAP architecture rules, SAP libraries, and project-specific commands live here.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Components at a glance</div>
+  <div class="cards three">
+    <div class="card" onclick="switchTo('claudemd')">
+      <div class="card-icon" style="background:rgba(255,107,53,.12)"><i class="ti ti-file-text" aria-hidden="true" style="color:var(--or3)"></i></div>
+      <div class="card-title">CLAUDE.md</div>
+      <div class="card-desc">Briefing doc — architecture, style, libraries, rules. Read on every session start.</div>
+      <span class="card-tag" style="background:rgba(255,107,53,.12);color:var(--or3)">Core</span>
+    </div>
+    <div class="card" onclick="switchTo('commands')">
+      <div class="card-icon" style="background:rgba(74,158,255,.12)"><i class="ti ti-terminal" aria-hidden="true" style="color:var(--blue)"></i></div>
+      <div class="card-title">Commands</div>
+      <div class="card-desc">Custom slash commands like <code style="color:var(--blue)">/review</code> or <code style="color:var(--blue)">/deploy</code> that run multi-step workflows.</div>
+      <span class="card-tag" style="background:rgba(74,158,255,.12);color:var(--blue)">Automation</span>
+    </div>
+    <div class="card" onclick="switchTo('rules')">
+      <div class="card-icon" style="background:rgba(167,139,250,.12)"><i class="ti ti-shield" aria-hidden="true" style="color:var(--purple)"></i></div>
+      <div class="card-title">Rules</div>
+      <div class="card-desc">Hard constraints Claude must always follow — no raw SQL, no secrets, use req.error() etc.</div>
+      <span class="card-tag" style="background:rgba(167,139,250,.12);color:var(--purple)">Guardrails</span>
+    </div>
+    <div class="card" onclick="switchTo('agents')">
+      <div class="card-icon" style="background:rgba(34,199,122,.12)"><i class="ti ti-robot" aria-hidden="true" style="color:var(--green)"></i></div>
+      <div class="card-title">Agents</div>
+      <div class="card-desc">Sub-agents with their own instructions that Claude can spin up for specialised tasks.</div>
+      <span class="card-tag" style="background:rgba(34,199,122,.12);color:var(--green)">Agentic</span>
+    </div>
+    <div class="card" onclick="switchTo('skills')">
+      <div class="card-icon" style="background:rgba(255,179,71,.12)"><i class="ti ti-puzzle" aria-hidden="true" style="color:var(--amber)"></i></div>
+      <div class="card-title">Skills</div>
+      <div class="card-desc">Modular SKILL.md guides loaded only when relevant — docx, pptx, PDF, frontend etc.</div>
+      <span class="card-tag" style="background:rgba(255,179,71,.12);color:var(--amber)">Modular</span>
+    </div>
+    <div class="card" onclick="switchTo('settings')">
+      <div class="card-icon" style="background:rgba(244,114,182,.12)"><i class="ti ti-settings" aria-hidden="true" style="color:var(--pink)"></i></div>
+      <div class="card-title">settings.json</div>
+      <div class="card-desc">Tool allowlists, blocked tools, env vars, and model preferences for this project.</div>
+      <span class="card-tag" style="background:rgba(244,114,182,.12);color:var(--pink)">Config</span>
+    </div>
+  </div>
+</div>
+
+<!-- CLAUDE.md -->
+<div class="view" id="view-claudemd">
+  <div class="info-row"><i class="ti ti-file-text" aria-hidden="true"></i><b style="color:var(--text)">CLAUDE.md</b> is the first thing Claude Code reads when it opens your project. Think of it as the briefing document you hand Claude before it touches any code.</div>
+
+  <div class="section-title">How Claude reads it</div>
+  <div class="flow">
+    <div class="fnode"><i class="ti ti-player-play" aria-hidden="true" style="color:var(--green)"></i>Session starts</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-file-text" aria-hidden="true" style="color:var(--or3)"></i>Reads ~/.claude/CLAUDE.md</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-file-text" aria-hidden="true" style="color:var(--or3)"></i>Reads ./CLAUDE.md</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-brain" aria-hidden="true" style="color:var(--purple)"></i>Merges into context</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-code" aria-hidden="true" style="color:var(--blue)"></i>Starts coding</div>
+  </div>
+
+  <div class="section-title">Six sections</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-layout-grid" aria-hidden="true" style="color:var(--or3)"></i>Architecture</div>
+      <div class="card-desc">Directory layout — db/, srv/, app/, handlers/. Claude places new files correctly without guessing.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-code" aria-hidden="true" style="color:var(--blue)"></i>Code style</div>
+      <div class="card-desc">Language, indent, quotes, naming conventions (PascalCase entities, camelCase handlers), error patterns.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-package" aria-hidden="true" style="color:var(--amber)"></i>Preferred libraries</div>
+      <div class="card-desc">SAP packages to use (@sap/cds, @sap/xssec) and libraries to explicitly avoid.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-terminal" aria-hidden="true" style="color:var(--green)"></i>Commands</div>
+      <div class="card-desc">cds watch, mbt build, cf deploy — so Claude generates runnable commands, not guesses.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-shield" aria-hidden="true" style="color:var(--purple)"></i>Critical rules</div>
+      <div class="card-desc">Hard constraints: no raw SQL, @restrict in CDS, no secrets in repo. Never violated.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-adjustments" aria-hidden="true" style="color:var(--pink)"></i>Technical constraints</div>
+      <div class="card-desc">Node version, @sap/cds pin, HANA Cloud vs SQLite, XSUAA vs IAS auth provider.</div>
+    </div>
+  </div>
+  <div class="tip"><b>Pro tip:</b> Keep CLAUDE.md under ~200 lines. If it grows longer, split concerns into Skills — Claude loads those on demand rather than on every session.</div>
+</div>
+
+<!-- COMMANDS -->
+<div class="view" id="view-commands">
+  <div class="info-row"><i class="ti ti-terminal" aria-hidden="true"></i>Custom commands are reusable slash commands stored as markdown files in <code style="color:var(--or3)">.claude/commands/</code>. Type <code style="color:var(--blue)">/command-name</code> in Claude Code to run them.</div>
+
+  <div class="section-title">How it works</div>
+  <div class="flow">
+    <div class="fnode"><i class="ti ti-terminal" aria-hidden="true" style="color:var(--blue)"></i>/review</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-file-text" aria-hidden="true" style="color:var(--or3)"></i>.claude/commands/review.md</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-brain" aria-hidden="true" style="color:var(--purple)"></i>Claude executes instructions</div>
+  </div>
+
+  <div class="section-title">File structure</div>
+  <div class="tree">
+    <div class="tree-line"><span class="folder">.claude/commands/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">├── </span><span class="file">review.md</span><span class="comment">← triggered by /review</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├── </span><span class="file">deploy.md</span><span class="comment">← triggered by /deploy</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├── </span><span class="file">test-service.md</span><span class="comment">← triggered by /test-service</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">└── </span><span class="file">scaffold-entity.md</span><span class="comment">← triggered by /scaffold-entity</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:16px">Example — /review command</div>
+  <div class="ex-block"><span class="c4"># .claude/commands/review.md</span>
+
+<span class="c1">## Code Review Checklist</span>
+
+<span class="c2">$ARGUMENTS</span>  <span class="c4">← receives file path or text after /review</span>
+
+Review the file above for:
+<span class="c3">- [ ]</span> No raw SQL — all DB access via CAP OData layer
+<span class="c3">- [ ]</span> @restrict annotations present on all entities
+<span class="c3">- [ ]</span> Handlers in srv/handlers/, not inline in .cds
+<span class="c3">- [ ]</span> req.error() used, not raw throw
+<span class="c3">- [ ]</span> No hardcoded credentials or secrets
+<span class="c3">- [ ]</span> cds.log() used instead of console.log</div>
+
+  <div class="section-title" style="margin-top:16px">Common BTP CAP commands</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><span style="color:var(--blue);font-family:var(--font-mono);font-size:12px">/scaffold-entity</span></div>
+      <div class="card-desc">Generates a CDS entity + service + handler scaffold following your project conventions. Accepts entity name as argument.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><span style="color:var(--blue);font-family:var(--font-mono);font-size:12px">/deploy-cf</span></div>
+      <div class="card-desc">Runs cds build → mbt build → cf deploy in sequence with pre-flight checks. Prompts if workspace is dirty.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><span style="color:var(--blue);font-family:var(--font-mono);font-size:12px">/add-odata</span></div>
+      <div class="card-desc">Adds a new OData action/function to the named service, wires up handler, and writes a Jest test stub.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><span style="color:var(--blue);font-family:var(--font-mono);font-size:12px">/review</span></div>
+      <div class="card-desc">Runs the full BTP CAP code review checklist against the file passed as argument.</div>
+    </div>
+  </div>
+  <div class="tip"><b>Tip:</b> Commands support <code style="color:var(--or3)">$ARGUMENTS</code> — text typed after the slash command is injected at that placeholder. Use it for entity names, file paths, or feature descriptions.</div>
+</div>
+
+<!-- RULES -->
+<div class="view" id="view-rules">
+  <div class="info-row"><i class="ti ti-shield" aria-hidden="true"></i>Rules are hard constraints embedded in CLAUDE.md under a <code style="color:var(--or3)">## Critical Rules</code> section. Claude treats them as non-negotiable — no exceptions, no workarounds.</div>
+
+  <div class="section-title">Where rules live in CLAUDE.md</div>
+  <div class="ex-block"><span class="c1">## Critical Rules</span>
+
+<span class="c3">- ⚠️</span>  Never bypass the CAP OData layer — no raw SQL or direct DB calls
+<span class="c3">- ⚠️</span>  All access control via @restrict in .cds files, not in handlers
+<span class="c3">- ⚠️</span>  Service handlers go in srv/handlers/, never inline
+<span class="c3">- ⚠️</span>  Always use req.user for identity — never trust client-provided fields
+<span class="c3">- ⚠️</span>  Never commit .env, default-env.json, or service keys</div>
+
+  <div class="section-title" style="margin-top:16px">Rule categories for BTP CAP</div>
+  <div class="cards three">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(226,75,74,.12)"><i class="ti ti-database-off" aria-hidden="true" style="color:#E24B4A"></i></div>
+      <div class="card-title">Data layer</div>
+      <div class="card-desc">No raw SQL. No direct HANA client calls. All reads and writes go through the CAP OData service layer.</div>
+      <span class="card-tag" style="background:rgba(226,75,74,.12);color:#E24B4A">Security</span>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(167,139,250,.12)"><i class="ti ti-lock" aria-hidden="true" style="color:var(--purple)"></i></div>
+      <div class="card-title">Authorization</div>
+      <div class="card-desc">@restrict annotations in .cds files only. Never re-implement auth logic in handlers. Use req.user, never trust client data.</div>
+      <span class="card-tag" style="background:rgba(167,139,250,.12);color:var(--purple)">Auth</span>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(255,107,53,.12)"><i class="ti ti-key" aria-hidden="true" style="color:var(--or3)"></i></div>
+      <div class="card-title">Secrets</div>
+      <div class="card-desc">Never commit .env, default-env.json, or service keys. Credentials live in BTP service bindings only.</div>
+      <span class="card-tag" style="background:rgba(255,107,53,.12);color:var(--or3)">Compliance</span>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(74,158,255,.12)"><i class="ti ti-layout-grid" aria-hidden="true" style="color:var(--blue)"></i></div>
+      <div class="card-title">Structure</div>
+      <div class="card-desc">Handlers in srv/handlers/. No logic inline in .cds files. Single-responsibility per service file.</div>
+      <span class="card-tag" style="background:rgba(74,158,255,.12);color:var(--blue)">Architecture</span>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(34,199,122,.12)"><i class="ti ti-bug" aria-hidden="true" style="color:var(--green)"></i></div>
+      <div class="card-title">Error handling</div>
+      <div class="card-desc">Use req.error() for user-facing errors. cds.log() for diagnostics. Never raw throw or console.log in production.</div>
+      <span class="card-tag" style="background:rgba(34,199,122,.12);color:var(--green)">Quality</span>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(255,179,71,.12)"><i class="ti ti-users" aria-hidden="true" style="color:var(--amber)"></i></div>
+      <div class="card-title">Multitenancy</div>
+      <div class="card-desc">Tenant isolation via @sap/mtxs. Never share DB connections across tenants. Feature flags via BTP, not hardcoded env vars.</div>
+      <span class="card-tag" style="background:rgba(255,179,71,.12);color:var(--amber)">MT</span>
+    </div>
+  </div>
+  <div class="tip"><b>Rules vs style:</b> Rules go in <code style="color:var(--or3)">## Critical Rules</code> — Claude treats them as absolute. Preferences (indent, quotes) go in <code style="color:var(--or3)">## Code Style</code> — Claude follows them but may adapt in context.</div>
+</div>
+
+<!-- AGENTS -->
+<div class="view" id="view-agents">
+  <div class="info-row"><i class="ti ti-robot" aria-hidden="true"></i>Agents are sub-Claude instances that Claude Code can spin up to handle specialised tasks in parallel or in sequence. Each agent has its own instruction file in <code style="color:var(--or3)">.claude/agents/</code>.</div>
+
+  <div class="section-title">How agents work</div>
+  <div class="flow">
+    <div class="fnode"><i class="ti ti-user" aria-hidden="true" style="color:var(--or3)"></i>You ask Claude</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-brain" aria-hidden="true" style="color:var(--purple)"></i>Orchestrator Claude</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-robot" aria-hidden="true" style="color:var(--green)"></i>Spawns sub-agents</div>
+    <div class="farr">→</div>
+    <div class="fnode"><i class="ti ti-arrows-join" aria-hidden="true" style="color:var(--blue)"></i>Merges results</div>
+  </div>
+
+  <div class="section-title">Agent directory</div>
+  <div class="tree">
+    <div class="tree-line"><span class="folder">.claude/agents/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">├── </span><span class="file">cds-modeler.md</span><span class="comment">← specialises in CDS data modelling</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">├── </span><span class="file">fiori-builder.md</span><span class="comment">← specialises in Fiori Elements config</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">├── </span><span class="file">test-writer.md</span><span class="comment">← writes Jest tests for CAP services</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">└── </span><span class="file">security-reviewer.md</span><span class="comment">← audits auth and data exposure</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:16px">Example agent file</div>
+  <div class="ex-block"><span class="c4"># .claude/agents/cds-modeler.md</span>
+
+<span class="c1">## Role</span>
+You are a CDS data modelling specialist for SAP CAP projects.
+
+<span class="c1">## Responsibilities</span>
+- Design CDS entity definitions in db/schema.cds
+- Add @title, @description, and @UI annotations
+- Define associations and compositions correctly
+- Apply @PersonalData for GDPR-relevant fields
+
+<span class="c1">## Constraints</span>
+- Never add business logic — that belongs in srv/handlers/
+- Always use managed aspects (cuid, managed) unless told otherwise
+- Follow naming: PascalCase entities, camelCase properties</div>
+
+  <div class="section-title" style="margin-top:16px">Common BTP CAP agents</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-database" aria-hidden="true" style="color:var(--or3)"></i>cds-modeler</div>
+      <div class="card-desc">Designs entity schemas, associations, annotations, and aspects. Keeps db/ clean and focused on data shape only.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-layout" aria-hidden="true" style="color:var(--blue)"></i>fiori-builder</div>
+      <div class="card-desc">Writes Fiori Elements annotations — @UI.LineItem, @UI.FieldGroup, value helps, and page configurations.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-test-pipe" aria-hidden="true" style="color:var(--green)"></i>test-writer</div>
+      <div class="card-desc">Writes Jest tests for CAP service handlers. Knows cds.test() patterns, mocking, and BTP service stubs.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-shield-check" aria-hidden="true" style="color:var(--purple)"></i>security-reviewer</div>
+      <div class="card-desc">Audits for missing @restrict, exposed fields, weak auth patterns, and GDPR annotation gaps.</div>
+    </div>
+  </div>
+  <div class="tip"><b>When to use agents:</b> Agents shine on large tasks that have clearly separable concerns — model the schema (cds-modeler) while simultaneously writing the Fiori annotations (fiori-builder) and test stubs (test-writer).</div>
+</div>
+
+<!-- SKILLS -->
+<div class="view" id="view-skills">
+  <div class="info-row"><i class="ti ti-puzzle" aria-hidden="true"></i>Skills are modular <code style="color:var(--or3)">SKILL.md</code> files loaded by Claude only when they are relevant to the current task — not on every session. This keeps the main CLAUDE.md lean.</div>
+
+  <div class="section-title">Skills vs CLAUDE.md</div>
+  <div class="cards">
+    <div class="card" style="border-color:var(--or2)">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-file-text" aria-hidden="true" style="color:var(--or3)"></i>CLAUDE.md</div>
+      <div class="card-desc">Always loaded. Contains project-wide architecture, style, and rules that apply to every task Claude does.</div>
+      <span class="card-tag" style="background:rgba(255,107,53,.12);color:var(--or3)">Always on</span>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-puzzle" aria-hidden="true" style="color:var(--amber)"></i>SKILL.md</div>
+      <div class="card-desc">Loaded on demand. Contains task-specific best practices — only consumed when Claude is about to do that type of task.</div>
+      <span class="card-tag" style="background:rgba(255,179,71,.12);color:var(--amber)">On demand</span>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:4px">Skills directory</div>
+  <div class="tree">
+    <div class="tree-line"><span class="folder">.claude/skills/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">├── </span><span class="folder">docx/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">│   └── </span><span class="file">SKILL.md</span><span class="comment">← read before creating Word documents</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├── </span><span class="folder">pptx/</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│   └── </span><span class="file">SKILL.md</span><span class="comment">← read before building slide decks</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├── </span><span class="folder">frontend-design/</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│   └── </span><span class="file">SKILL.md</span><span class="comment">← read before building UI components</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">└── </span><span class="folder">cap-handler/</span></div>
+    <div class="tree-line hl"><span style="color:var(--muted)">    └── </span><span class="file">SKILL.md</span><span class="comment">← read before writing CAP event handlers</span></div>
+  </div>
+
+  <div class="section-title" style="margin-top:16px">Example SAP-specific skill</div>
+  <div class="ex-block"><span class="c4"># .claude/skills/cap-handler/SKILL.md</span>
+
+<span class="c1">## CAP Event Handler Conventions</span>
+
+<span class="c1">### File location</span>
+All handlers: <span class="c2">srv/handlers/{EntityName}.handler.js</span>
+
+<span class="c1">### Pattern</span>
+<span class="c3">module.exports</span> = (srv) => {
+  srv.before(<span class="c2">'CREATE'</span>, <span class="c2">'Orders'</span>, async (req) => { ... })
+  srv.on(<span class="c2">'READ'</span>, <span class="c2">'Orders'</span>, async (req) => { ... })
+  srv.after(<span class="c2">'CREATE'</span>, <span class="c2">'Orders'</span>, async (data, req) => { ... })
+}
+
+<span class="c1">### Rules</span>
+- Use req.error(400, 'msg') — never throw
+- req.user.id for identity
+- cds.log() not console.log</div>
+
+  <div class="tip"><b>Custom skills:</b> Write your own SKILL.md files for recurring task types — generating test data, writing OpenAPI specs, setting up BTP destinations. Claude reads and follows them exactly like built-in skills.</div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="view-settings">
+  <div class="info-row"><i class="ti ti-settings" aria-hidden="true"></i><code style="color:var(--or3)">settings.json</code> controls which tools Claude Code can use, environment variables, and model config. Lives in <code style="color:var(--or3)">.claude/settings.json</code> (project) or <code style="color:var(--or3)">~/.claude/settings.json</code> (global).</div>
+
+  <div class="section-title">Settings structure</div>
+  <div class="ex-block"><span class="c4">// .claude/settings.json</span>
+{
+  <span class="c2">"model"</span>: <span class="c3">"claude-sonnet-4-20250514"</span>,
+
+  <span class="c2">"tools"</span>: {
+    <span class="c2">"allowed"</span>: [<span class="c3">"bash"</span>, <span class="c3">"read_file"</span>, <span class="c3">"write_file"</span>, <span class="c3">"search"</span>],
+    <span class="c2">"blocked"</span>: [<span class="c3">"browser"</span>]  <span class="c4">← disable tools you don't want</span>
+  },
+
+  <span class="c2">"env"</span>: {
+    <span class="c2">"CDS_ENV"</span>: <span class="c3">"development"</span>,
+    <span class="c2">"NODE_ENV"</span>: <span class="c3">"development"</span>
+  },
+
+  <span class="c2">"permissions"</span>: {
+    <span class="c2">"allowNetworkAccess"</span>: <span class="c1">false</span>,
+    <span class="c2">"allowFileSystemAccess"</span>: <span class="c1">true</span>
+  }
+}</div>
+
+  <div class="section-title" style="margin-top:16px">Key settings for BTP CAP</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-tool" aria-hidden="true" style="color:var(--or3)"></i>Tool allowlist</div>
+      <div class="card-desc">Restrict Claude to only the tools your project needs. Block browser access in secure CI pipelines. Allow bash for cds commands.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-variable" aria-hidden="true" style="color:var(--blue)"></i>Environment vars</div>
+      <div class="card-desc">Inject CDS_ENV, NODE_ENV, and other dev-time vars. These are safe non-secret config — never put service keys here.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-cpu" aria-hidden="true" style="color:var(--green)"></i>Model selection</div>
+      <div class="card-desc">Pin to a specific model version for consistent output across your team. Useful for reproducible CI code generation.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;gap:6px"><i class="ti ti-lock" aria-hidden="true" style="color:var(--purple)"></i>Permissions</div>
+      <div class="card-desc">Control filesystem and network access. Tighten for production-adjacent environments, loosen for local dev workflows.</div>
+    </div>
+  </div>
+  <div class="tip"><b>Global vs project:</b> Set your personal defaults globally (~/.claude/settings.json) — preferred model, your coding style env vars. Override per-project for BTP-specific tool restrictions or CI pipeline settings.</div>
+</div>
+
+<script>
+document.querySelectorAll('.ntab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    switchTo(t.dataset.v);
+  });
+});
+function switchTo(v){
+  document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.querySelector('[data-v="'+v+'"]').classList.add('active');
+  document.getElementById('view-'+v).classList.add('on');
+}
+</script>

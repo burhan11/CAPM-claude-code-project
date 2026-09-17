@@ -1,0 +1,404 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --or1:#FF4500;--or2:#FF6B35;--or3:#FF8C42;--or4:#FFA559;--or5:#FFB347;
+  --dark:#0D0D1A;--surface:#13131F;--card:#1A1A2E;--border:#252540;
+  --border2:#303055;--text:#F0F0FF;--muted:#7070A0;--faint:#2A2A45;
+  --green:#22C77A;--blue:#4A9EFF;--purple:#A78BFA;--amber:#FFB347;--red:#F87171;--pink:#F472B6;
+}
+body{background:var(--dark);font-family:var(--font-sans);color:var(--text)}
+
+.bh{background:linear-gradient(135deg,#0D0D1A 0%,#1A0A05 50%,#0D0D1A 100%);border-bottom:1px solid var(--border2);padding:12px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.bh::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--or2),var(--or3),var(--or2),transparent)}
+.lr{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--or1),var(--or3),var(--or5));padding:2px;flex-shrink:0}
+.lr img{width:100%;height:100%;border-radius:50%;display:block;object-fit:cover;background:#1a1a2e}
+.bn{font-size:14px;font-weight:500;background:linear-gradient(90deg,var(--or2),var(--or4),#FFD580);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bs{font-size:10px;color:var(--muted)}
+.hb{margin-left:auto;font-size:10px;font-weight:500;padding:2px 9px;border-radius:20px;background:linear-gradient(90deg,var(--or1),var(--or3));color:#fff;letter-spacing:.04em}
+
+.nav{display:flex;gap:2px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nt{padding:10px 14px;font-size:11.5px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.nt:hover{color:var(--text)}
+.nt.on{color:var(--or3);border-bottom-color:var(--or3)}
+.nt i{font-size:13px}
+
+.vw{display:none;padding:20px}
+.vw.show{display:block}
+
+.sh{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sh::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.card{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.card-body{font-size:11.5px;color:var(--muted);line-height:1.75}
+
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px}
+.tg{background:rgba(34,199,122,.12);color:var(--green)}
+.tb{background:rgba(74,158,255,.12);color:var(--blue)}
+.to{background:rgba(255,107,53,.12);color:var(--or3)}
+.tp{background:rgba(167,139,250,.12);color:var(--purple)}
+.ta{background:rgba(255,179,71,.12);color:var(--amber)}
+.tr{background:rgba(248,113,113,.12);color:var(--red)}
+
+.ex{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--font-mono);font-size:11px;line-height:1.9;color:#C8C8E8;margin-top:8px;white-space:pre}
+.k{color:var(--or3)} .v{color:var(--blue)} .g{color:var(--green)} .c{color:var(--muted)} .p{color:var(--purple)} .r{color:var(--red)}
+
+.tip{background:linear-gradient(90deg,rgba(255,69,0,.07),transparent);border-left:2px solid var(--or2);border-radius:0 8px 8px 0;padding:9px 12px;font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px}
+.tip b{color:var(--text)}
+
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+.fn{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:11px;color:var(--text);display:flex;align-items:center;gap:5px}
+.fa{color:var(--muted);font-size:12px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.mem-entry{background:var(--faint);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.mem-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.mem-text{flex:1}
+.mem-label{font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:.03em}
+.mem-val{font-size:11.5px;color:var(--text);font-family:var(--font-mono);line-height:1.5}
+.mem-ts{font-size:10px;color:var(--faint);margin-top:3px}
+
+.bullet{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:11.5px;color:var(--muted);line-height:1.65}
+.bullet i{font-size:13px;flex-shrink:0;margin-top:1px}
+.bullet b{color:var(--text)}
+
+.chat-bubble{border-radius:10px;padding:9px 12px;font-size:11.5px;line-height:1.6;margin-bottom:6px;max-width:90%}
+.user-bubble{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:var(--text);margin-left:auto}
+.claude-bubble{background:var(--faint);border:1px solid var(--border2);color:var(--muted)}
+.bubble-label{font-size:10px;color:var(--muted);margin-bottom:3px}
+
+.session-divider{display:flex;align-items:center;gap:8px;margin:12px 0;font-size:10px;color:var(--muted)}
+.session-divider::before,.session-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.cmd-block{background:var(--surface);border:1px solid rgba(74,158,255,.25);border-radius:8px;padding:12px;margin-top:8px}
+.cmd-title{font-size:11px;color:var(--blue);font-family:var(--font-mono);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cmd-row{display:flex;align-items:flex-start;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px}
+.cmd-row:last-child{border-bottom:none}
+.cmd-name{color:var(--or3);font-family:var(--font-mono);width:160px;flex-shrink:0}
+.cmd-desc{color:var(--muted);line-height:1.5}
+
+.vs-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin-bottom:12px}
+.vs-box{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:12px}
+.vs-head{font-size:11px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.vs-mid{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);padding-top:40px}
+</style>
+
+<div class="bh">
+  <div class="lr"><img src="https://s2.coinmarketcap.com/static/img/coins/200x200/37581.png" alt="AT" onerror="this.style.display='none'"/></div>
+  <div><div class="bn">Anubhav Trainings</div><div class="bs">SAP BTP · CAP · Claude Code</div></div>
+  <div class="hb">Auto-memory & /memory</div>
+</div>
+
+<div class="nav">
+  <button class="nt on" data-v="what"><i class="ti ti-brain" aria-hidden="true"></i>What is it</button>
+  <button class="nt" data-v="how"><i class="ti ti-refresh" aria-hidden="true"></i>How it works</button>
+  <button class="nt" data-v="write"><i class="ti ti-edit" aria-hidden="true"></i>Writing memory</button>
+  <button class="nt" data-v="cmd"><i class="ti ti-terminal" aria-hidden="true"></i>/memory command</button>
+  <button class="nt" data-v="vs"><i class="ti ti-scale" aria-hidden="true"></i>vs CLAUDE.md</button>
+  <button class="nt" data-v="benefits"><i class="ti ti-star" aria-hidden="true"></i>Benefits</button>
+</div>
+
+<!-- WHAT -->
+<div class="vw show" id="view-what">
+  <div class="sh">what is auto-memory</div>
+
+  <div class="card">
+    <div class="card-title"><i class="ti ti-brain" aria-hidden="true" style="color:var(--purple)"></i>Auto-memory defined <span class="tag tp">Claude Code</span></div>
+    <div class="card-body">Auto-memory is Claude Code's system for automatically capturing and persisting context across sessions. When Claude notices something worth remembering — a preference you expressed, a pattern you corrected, a decision you made — it silently writes that into a memory store so future sessions already know it without you repeating yourself.</div>
+  </div>
+
+  <div class="sh">the problem it solves</div>
+
+  <div class="card" style="border-color:rgba(248,113,113,.25)">
+    <div class="card-title"><i class="ti ti-repeat" aria-hidden="true" style="color:var(--red)"></i>Without auto-memory — you repeat yourself every session</div>
+    <div style="margin-top:8px">
+      <div class="session-divider">Session 1</div>
+      <div class="chat-bubble user-bubble">Always use req.error() — never throw raw errors in our CAP project.</div>
+      <div class="chat-bubble claude-bubble">Got it, I'll use req.error() for all error handling.</div>
+      <div class="session-divider">Session 2 — next day</div>
+      <div class="chat-bubble claude-bubble" style="color:var(--red)">throw new Error('Not found') ← Claude forgot. You need to say it again.</div>
+      <div class="session-divider">Session 3 — a week later</div>
+      <div class="chat-bubble claude-bubble" style="color:var(--red)">throw new Error('Unauthorized') ← Still forgotten. Context is gone.</div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(34,199,122,.25);margin-top:0">
+    <div class="card-title"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i>With auto-memory — Claude remembers across sessions</div>
+    <div style="margin-top:8px">
+      <div class="session-divider">Session 1</div>
+      <div class="chat-bubble user-bubble">Always use req.error() — never throw raw errors.</div>
+      <div class="chat-bubble claude-bubble" style="color:var(--green)">Noted. Saving to memory: "Use req.error() for all CAP errors."</div>
+      <div class="session-divider">Session 2 — next day</div>
+      <div class="chat-bubble claude-bubble" style="color:var(--green)">req.error(404, 'Record not found') ← Already knows. No reminder needed.</div>
+      <div class="session-divider">Session 3 — one month later</div>
+      <div class="chat-bubble claude-bubble" style="color:var(--green)">req.error(401, 'Unauthorized') ← Still remembers. Context persists.</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="vw" id="view-how">
+  <div class="sh">how auto-memory works</div>
+
+  <div class="flow">
+    <div class="fn"><i class="ti ti-message" aria-hidden="true" style="color:var(--blue)"></i>You say something</div>
+    <div class="fa">→</div>
+    <div class="fn"><i class="ti ti-brain" aria-hidden="true" style="color:var(--purple)"></i>Claude detects it's memorable</div>
+    <div class="fa">→</div>
+    <div class="fn"><i class="ti ti-database" aria-hidden="true" style="color:var(--or3)"></i>Written to memory store</div>
+    <div class="fa">→</div>
+    <div class="fn"><i class="ti ti-player-play" aria-hidden="true" style="color:var(--green)"></i>Loaded on next session</div>
+  </div>
+
+  <div class="sh">where memory is stored</div>
+  <div class="ex"><span class="c"># Memory lives in your home .claude directory</span>
+
+<span class="g">~/.claude/</span>
+<span class="g">  └── memory.json</span>     <span class="c">← auto-memory entries live here</span>
+
+<span class="c"># Each entry has a key, value, source, and timestamp</span>
+{
+  <span class="v">"entries"</span>: [
+    {
+      <span class="v">"key"</span>: <span class="k">"error_handling"</span>,
+      <span class="v">"value"</span>: <span class="k">"Use req.error() not raw throw in CAP handlers"</span>,
+      <span class="v">"source"</span>: <span class="k">"auto"</span>,        <span class="c">← written automatically</span>
+      <span class="v">"project"</span>: <span class="k">"my-btp-app"</span>,
+      <span class="v">"timestamp"</span>: <span class="k">"2025-05-11"</span>
+    },
+    {
+      <span class="v">"key"</span>: <span class="k">"indent_style"</span>,
+      <span class="v">"value"</span>: <span class="k">"2 spaces, single quotes, no semicolons"</span>,
+      <span class="v">"source"</span>: <span class="k">"manual"</span>,     <span class="c">← written via /memory command</span>
+      <span class="v">"project"</span>: <span class="k">"global"</span>
+    }
+  ]
+}</div>
+
+  <div class="sh" style="margin-top:14px">what triggers auto-capture</div>
+  <div class="three">
+    <div class="card">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-edit" aria-hidden="true" style="color:var(--or3)"></i>Corrections</div>
+      <div class="card-body" style="font-size:11px">"No, we use camelCase for handlers, not PascalCase." — Claude captures the correction and won't repeat the mistake.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-heart" aria-hidden="true" style="color:var(--blue)"></i>Preferences</div>
+      <div class="card-body" style="font-size:11px">"I prefer async/await over .then chains." — Claude stores the preference and applies it going forward automatically.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-flag" aria-hidden="true" style="color:var(--green)"></i>Decisions</div>
+      <div class="card-body" style="font-size:11px">"We decided to use @sap/mtxs for multitenancy, not custom tenant logic." — Architecture decisions persist across sessions.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WRITING MEMORY -->
+<div class="vw" id="view-write">
+  <div class="sh">two ways to write to memory</div>
+
+  <div class="two">
+    <div class="card" style="border-color:rgba(167,139,250,.3)">
+      <div class="card-title"><i class="ti ti-sparkles" aria-hidden="true" style="color:var(--purple)"></i>1. Automatic <span class="tag tp">Passive</span></div>
+      <div class="card-body">Claude silently writes to memory when it detects corrections, strong preferences, or important decisions — without you doing anything.</div>
+      <div class="ex" style="margin-top:8px"><span class="c"># You say naturally in conversation:</span>
+
+<span class="g">"Don't use console.log — we use cds.log()"</span>
+<span class="g">"We always add the managed aspect to entities"</span>
+<span class="g">"Our handlers export module.exports = (srv) =>"</span>
+
+<span class="c"># Claude captures these without being asked</span></div>
+    </div>
+    <div class="card" style="border-color:rgba(74,158,255,.3)">
+      <div class="card-title"><i class="ti ti-terminal" aria-hidden="true" style="color:var(--blue)"></i>2. Manual via /memory <span class="tag tb">Explicit</span></div>
+      <div class="card-body">Use the <code style="color:var(--or3)">/memory</code> command to explicitly write, view, or delete entries — giving you full control over what persists.</div>
+      <div class="ex" style="margin-top:8px"><span class="c"># Explicitly save something:</span>
+
+<span class="v">/memory add</span> <span class="k">"Always use cds.test() for CAP tests"</span>
+<span class="v">/memory add</span> <span class="k">"Project uses HANA Cloud, not SQLite"</span>
+<span class="v">/memory add</span> <span class="k">"Auth: XSUAA with @sap/xssec middleware"</span>
+
+<span class="c"># Claude confirms and stores immediately</span></div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:6px">what makes a good memory entry</div>
+  <div class="card">
+    <div class="two">
+      <div>
+        <div style="font-size:11px;color:var(--green);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-check" aria-hidden="true"></i>Good entries — specific & actionable</div>
+        <div class="mem-entry">
+          <div class="mem-icon" style="background:rgba(34,199,122,.12)"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i></div>
+          <div class="mem-text"><div class="mem-label">error handling</div><div class="mem-val">req.error(code, msg) — never throw</div></div>
+        </div>
+        <div class="mem-entry">
+          <div class="mem-icon" style="background:rgba(34,199,122,.12)"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i></div>
+          <div class="mem-text"><div class="mem-label">handlers location</div><div class="mem-val">srv/handlers/{Entity}.handler.js</div></div>
+        </div>
+        <div class="mem-entry">
+          <div class="mem-icon" style="background:rgba(34,199,122,.12)"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i></div>
+          <div class="mem-text"><div class="mem-label">db layer</div><div class="mem-val">Always add cuid + managed aspects</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--red);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-x" aria-hidden="true"></i>Bad entries — vague or generic</div>
+        <div class="mem-entry" style="border-color:rgba(248,113,113,.2)">
+          <div class="mem-icon" style="background:rgba(248,113,113,.1)"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i></div>
+          <div class="mem-text"><div class="mem-label">general</div><div class="mem-val">Write good code</div></div>
+        </div>
+        <div class="mem-entry" style="border-color:rgba(248,113,113,.2)">
+          <div class="mem-icon" style="background:rgba(248,113,113,.1)"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i></div>
+          <div class="mem-text"><div class="mem-label">general</div><div class="mem-val">Use best practices</div></div>
+        </div>
+        <div class="mem-entry" style="border-color:rgba(248,113,113,.2)">
+          <div class="mem-icon" style="background:rgba(248,113,113,.1)"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i></div>
+          <div class="mem-text"><div class="mem-label">general</div><div class="mem-val">Follow SAP guidelines</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="tip" style="margin-top:10px"><b>Golden rule:</b> A good memory entry answers "what should Claude do differently in this project compared to its defaults?" Generic best practices don't need to be stored — Claude already knows them.</div>
+  </div>
+</div>
+
+<!-- /memory COMMAND -->
+<div class="vw" id="view-cmd">
+  <div class="sh">/memory command reference</div>
+
+  <div class="cmd-block">
+    <div class="cmd-title"><i class="ti ti-terminal" aria-hidden="true"></i>/memory — full command reference</div>
+    <div class="cmd-row">
+      <div class="cmd-name">/memory</div>
+      <div class="cmd-desc">Opens the memory panel — shows all current entries, their source (auto/manual), and timestamps. Your full memory at a glance.</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/memory add "..."</div>
+      <div class="cmd-desc">Explicitly adds a new memory entry. Put the text in quotes. Claude confirms the save immediately. Best for architectural decisions you want guaranteed to persist.</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/memory delete [id]</div>
+      <div class="cmd-desc">Removes a specific entry by its ID. Use this to purge stale memories when your project changes — e.g. after switching from SQLite to HANA Cloud.</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/memory clear</div>
+      <div class="cmd-desc">Wipes all memory entries for the current project. Use carefully — typically only when starting a major refactor or when memory has drifted from reality.</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/memory export</div>
+      <div class="cmd-desc">Exports all memory entries as a markdown file. Useful for reviewing what Claude knows, onboarding teammates, or seeding a new project's CLAUDE.md.</div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:16px">practical /memory workflow for BTP CAP</div>
+  <div class="ex"><span class="c"># Start of a new CAP project — seed memory manually</span>
+<span class="v">/memory add</span> <span class="k">"Runtime: Cloud Foundry on BTP"</span>
+<span class="v">/memory add</span> <span class="k">"DB: SAP HANA Cloud — not SQLite in any env"</span>
+<span class="v">/memory add</span> <span class="k">"Auth: XSUAA with JWT — never mock auth in staging"</span>
+<span class="v">/memory add</span> <span class="k">"Handlers: module.exports = (srv) => {} pattern"</span>
+<span class="v">/memory add</span> <span class="k">"Never use console.log — always cds.log()"</span>
+
+<span class="c"># Review what's stored</span>
+<span class="v">/memory</span>
+
+<span class="c"># After migrating from SQLite to HANA</span>
+<span class="v">/memory delete</span> sqlite-dev-entry-id
+<span class="v">/memory add</span> <span class="k">"Dev DB now also HANA Cloud via cds bind"</span>
+
+<span class="c"># Export to review or use in CLAUDE.md</span>
+<span class="v">/memory export</span></div>
+
+  <div class="tip"><b>Pro tip:</b> Run <code style="color:var(--or3)">/memory export</code> periodically and paste the important entries into your CLAUDE.md. That way the context is available to teammates too — not just your local Claude instance.</div>
+</div>
+
+<!-- VS CLAUDE.md -->
+<div class="vw" id="view-vs">
+  <div class="sh">auto-memory vs CLAUDE.md</div>
+
+  <div class="vs-row">
+    <div class="vs-box" style="border-color:rgba(167,139,250,.3)">
+      <div class="vs-head" style="color:var(--purple)"><i class="ti ti-brain" aria-hidden="true"></i>Auto-memory</div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Written automatically as you work</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Captures corrections and preferences mid-session</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Personal — lives on your machine only</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Evolves automatically as the project changes</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Not shared with teammates</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Not version controlled in git</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Can drift if not reviewed</span></div>
+    </div>
+    <div class="vs-mid">vs</div>
+    <div class="vs-box" style="border-color:rgba(255,107,53,.3)">
+      <div class="vs-head" style="color:var(--or3)"><i class="ti ti-file-text" aria-hidden="true"></i>CLAUDE.md</div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Written intentionally and reviewed by humans</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Committed to git — shared with the whole team</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Structured by section — easy to audit in PRs</span></div>
+      <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span>Source of truth for project architecture rules</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Requires manual effort to write and maintain</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Doesn't capture session-by-session learnings</span></div>
+      <div class="bullet"><i class="ti ti-x" aria-hidden="true" style="color:var(--red)"></i><span>Static until someone deliberately updates it</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(255,179,71,.25)">
+    <div class="card-title"><i class="ti ti-arrows-join" aria-hidden="true" style="color:var(--amber)"></i>Best practice — use both together</div>
+    <div class="card-body" style="margin-bottom:10px">They're complementary, not competing. The ideal workflow is:</div>
+    <div class="bullet"><i class="ti ti-number-1" aria-hidden="true" style="color:var(--or3)"></i><span><b>Auto-memory</b> captures learnings as you code day to day — zero friction, no manual work.</span></div>
+    <div class="bullet"><i class="ti ti-number-2" aria-hidden="true" style="color:var(--or3)"></i><span><b>Periodically run</b> <code style="color:var(--blue)">/memory export</code> and review what got captured.</span></div>
+    <div class="bullet"><i class="ti ti-number-3" aria-hidden="true" style="color:var(--or3)"></i><span><b>Promote important entries</b> to CLAUDE.md so teammates benefit too — not just you.</span></div>
+    <div class="bullet"><i class="ti ti-number-4" aria-hidden="true" style="color:var(--or3)"></i><span><b>CLAUDE.md stays</b> the team-level source of truth, memory handles your personal session continuity.</span></div>
+  </div>
+</div>
+
+<!-- BENEFITS -->
+<div class="vw" id="view-benefits">
+  <div class="sh">benefits of auto-memory</div>
+
+  <div class="three">
+    <div class="card" style="border-color:rgba(34,199,122,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-clock" aria-hidden="true" style="color:var(--green)"></i>Zero repetition</div>
+      <div class="card-body" style="font-size:11px">Say a preference once. Auto-memory ensures Claude carries it into every future session — no re-briefing required at the start of each conversation.</div>
+    </div>
+    <div class="card" style="border-color:rgba(74,158,255,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-trending-up" aria-hidden="true" style="color:var(--blue)"></i>Gets smarter over time</div>
+      <div class="card-body" style="font-size:11px">Every correction you make improves Claude's future behaviour. The longer you use it in a project, the better it understands how your team works.</div>
+    </div>
+    <div class="card" style="border-color:rgba(167,139,250,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-bolt" aria-hidden="true" style="color:var(--purple)"></i>Instant project context</div>
+      <div class="card-body" style="font-size:11px">New sessions start with full context loaded — Claude knows your stack, your patterns, your rules — without reading the whole codebase again.</div>
+    </div>
+    <div class="card" style="border-color:rgba(255,179,71,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-puzzle" aria-hidden="true" style="color:var(--amber)"></i>Fills CLAUDE.md gaps</div>
+      <div class="card-body" style="font-size:11px">Things you forgot to put in CLAUDE.md get captured automatically as you encounter them — memory is the safety net for the things you didn't think to document.</div>
+    </div>
+    <div class="card" style="border-color:rgba(255,107,53,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-user" aria-hidden="true" style="color:var(--or3)"></i>Personal layer on top</div>
+      <div class="card-body" style="font-size:11px">CLAUDE.md is the team layer. Memory is your personal layer — individual preferences that are yours, not necessarily the team's convention.</div>
+    </div>
+    <div class="card" style="border-color:rgba(248,113,113,.25)">
+      <div class="card-title" style="font-size:12px"><i class="ti ti-history" aria-hidden="true" style="color:var(--red)"></i>Decision audit trail</div>
+      <div class="card-body" style="font-size:11px">Memory entries carry timestamps. You can see when you made a technical decision — useful for understanding why something was done months later.</div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:6px">especially powerful for SAP BTP CAP</div>
+  <div class="card">
+    <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span><b>BTP service binding patterns</b> — once Claude learns your specific xs-security.json structure and mta.yaml layout, it applies them every session without guidance.</span></div>
+    <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span><b>Annotation style decisions</b> — whether you use <code style="color:var(--blue)">@UI.LineItem</code> inline or in a separate annotations.cds file, Claude remembers your team's preference.</span></div>
+    <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span><b>HANA-specific quirks</b> — things like which HANA features your version supports, or specific HANA Cloud instance naming conventions, persist across sessions.</span></div>
+    <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span><b>Fiori element preferences</b> — table vs list report, chart configurations, filter bar layouts — auto-memory means Claude matches your UI patterns without needing them in CLAUDE.md.</span></div>
+    <div class="bullet"><i class="ti ti-check" aria-hidden="true" style="color:var(--green)"></i><span><b>Error correction persistence</b> — every time you correct a CAP-specific mistake (wrong handler syntax, wrong OData version assumption), that correction is permanent going forward.</span></div>
+    <div class="tip" style="margin-top:10px"><b>The compound effect:</b> After 2–3 weeks of active use, auto-memory plus CLAUDE.md gives Claude a level of project awareness that would take hundreds of lines of documentation to replicate manually — and it stays current automatically.</div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.nt').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.nt').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.vw').forEach(x=>x.classList.remove('show'));
+    t.classList.add('on');
+    document.getElementById('view-'+t.dataset.v).classList.add('show');
+  });
+});
+</script>
