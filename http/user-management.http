@@ -1,0 +1,292 @@
+### ==============================================================
+### UserManagement — OData V4 & V2 test scenarios (REST Client)
+### ==============================================================
+### Start the server first:  npx cds watch
+### V4 base: http://localhost:4004/odata/v4/user-management
+### V2 base: http://localhost:4004/odata/v2/user-management
+###
+### AUTH NOTE (verified against a live server):
+### The whole service carries @requires: 'Admin' (capitalised). Role
+### checks are case-sensitive and the CAP default mocked users
+### (alice/bob/carol/...) only carry a lowercase 'admin' role, so
+### every request below will 403 until you add a matching mock user.
+### Add a project-root `.cdsrc.json` (untracked, dev-only — see chat):
+###
+### {
+###   "requires": { "auth": { "kind": "mocked", "users": {
+###     "admin":         { "roles": ["Admin"] },
+###     "rohan.sharma":  { "roles": ["Traveller"] }
+###   } } }
+### }
+###
+### 'rohan.sharma' (Traveller role, no Admin) is used below to prove
+### the service correctly rejects non-admins.
+
+@host = http://localhost:4004
+@v4 = {{host}}/odata/v4/user-management
+@v2 = {{host}}/odata/v2/user-management
+
+@adminUser = admin
+@adminPass = pass
+@travellerUser = rohan.sharma
+@travellerPass = pass
+
+# Seed data (db/data/burhan.claude-Users.csv / -UserRoles.csv):
+# mike.anderson = AGENT only; ravi.kapoor = isLocked true; wei.chen = isLocked true
+@userMikeAnderson = 50000000-0000-4000-8000-000000000003
+@userLauraBennett = 50000000-0000-4000-8000-000000000004
+@userRaviKapoor = 50000000-0000-4000-8000-000000000005
+@userWeiChen = 50000000-0000-4000-8000-000000000010
+@nonExistentUser = 00000000-0000-0000-0000-000000000000
+
+
+### ==============================================================
+### A. Authorization boundary
+### ==============================================================
+
+### A1. [V4] Unauthenticated request — expect 401
+GET {{v4}}/Users
+
+### A2. [V4] Non-admin (Traveller role) reads Users — expect 403
+GET {{v4}}/Users
+Authorization: Basic {{travellerUser}} {{travellerPass}}
+
+### A3. [V4] Non-admin calls lockUser — expect 403
+GET {{v4}}/lockUser(userId='{{userMikeAnderson}}')
+Authorization: Basic {{travellerUser}} {{travellerPass}}
+
+### A4. [V2] Non-admin reads Users — expect 403
+GET {{v2}}/Users
+Authorization: Basic {{travellerUser}} {{travellerPass}}
+
+
+### ==============================================================
+### B. Users / Roles / UserRoles entities (admin only)
+### ==============================================================
+
+### B1. [V4] Admin lists all users
+GET {{v4}}/Users
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B2. [V4] Admin reads one user, expanding role assignments
+GET {{v4}}/Users({{userMikeAnderson}})?$expand=roles
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B3. [V4] Admin lists all role definitions
+GET {{v4}}/Roles
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B4. [V4] Admin lists all user-role assignments, expanding user & role
+GET {{v4}}/UserRoles?$expand=user,role
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B5. [V4] Filter users by isLocked
+GET {{v4}}/Users?$filter=isLocked eq true
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B6. [V2] Admin lists all users
+GET {{v2}}/Users
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B7. [V2] Admin reads one user with $expand
+GET {{v2}}/Users(guid'{{userMikeAnderson}}')?$expand=roles
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### B8. [V2] $inlinecount on Roles
+GET {{v2}}/Roles?$inlinecount=allpages
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+
+### ==============================================================
+### C. lockUser / unlockUser — unbound functions
+###    V4 call convention: /lockUser(userId='...')  (GET)
+###    V2 call convention: /lockUser?userId='...'   (GET)
+### ==============================================================
+
+### C1. [V4] Lock an unlocked user — expect true
+GET {{v4}}/lockUser(userId='{{userLauraBennett}}')
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C2. [V4] Lock an already-locked user — expect false (no-op, not an error)
+GET {{v4}}/lockUser(userId='{{userRaviKapoor}}')
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C3. [V4] Lock a non-existent user — expect 404
+GET {{v4}}/lockUser(userId='{{nonExistentUser}}')
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C4. [V4] Unlock a locked user — expect true
+GET {{v4}}/unlockUser(userId='{{userWeiChen}}')
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C5. [V4] Unlock an already-unlocked user — expect false
+GET {{v4}}/unlockUser(userId='{{userLauraBennett}}')
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C6. [V2] Lock a user via query-string function call
+GET {{v2}}/lockUser?userId='{{userLauraBennett}}'
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C7. [V2] Unlock a user via query-string function call
+GET {{v2}}/unlockUser?userId='{{userWeiChen}}'
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C8. [V2] Lock a non-existent user — expect 404
+GET {{v2}}/lockUser?userId='{{nonExistentUser}}'
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+
+### ==============================================================
+### D. createUser — action (POST)
+### ==============================================================
+
+### D1. [V4] Create user — happy path
+# @name createUserV4
+POST {{v4}}/createUser
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Nadia",
+  "lastName": "Khan",
+  "email": "nadia.khan@travelapp.com",
+  "roleId": "TRAVELLER"
+}
+
+### D2. [V4] Create user — duplicate email (loginName) — expect 409
+POST {{v4}}/createUser
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Duplicate",
+  "lastName": "Anderson",
+  "email": "mike.anderson@travelapp.com",
+  "roleId": "AGENT"
+}
+
+### D3. [V4] Create user — unknown roleId — expect 404
+POST {{v4}}/createUser
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Oscar",
+  "lastName": "Nolan",
+  "email": "oscar.nolan@travelapp.com",
+  "roleId": "SUPERUSER"
+}
+
+### D4. [V2] Create user — happy path
+POST {{v2}}/createUser
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Petra",
+  "lastName": "Novak",
+  "email": "petra.novak@travelapp.com",
+  "roleId": "AGENT"
+}
+
+
+### ==============================================================
+### E. resetPassword — action (POST)
+### ==============================================================
+
+### E1. [V4] Reset password — empty password — expect 400
+POST {{v4}}/resetPassword
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "newPassword": "" }
+
+### E2. [V4] Reset password — too short (< 8 chars) — expect 400
+POST {{v4}}/resetPassword
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "newPassword": "short1" }
+
+### E3. [V4] Reset password — non-existent user — expect 404
+POST {{v4}}/resetPassword
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{nonExistentUser}}", "newPassword": "ValidPass123" }
+
+### E4. [V4] Reset password — happy path — expect true
+POST {{v4}}/resetPassword
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "newPassword": "ValidPass123" }
+
+### E5. [V2] Reset password — happy path
+POST {{v2}}/resetPassword
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userLauraBennett}}", "newPassword": "ValidPass456" }
+
+
+### ==============================================================
+### F. assignRole / unassignRole — actions (POST)
+### ==============================================================
+
+### F1. [V4] Assign a role the user doesn't have yet — expect true
+POST {{v4}}/assignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "roleId": "ADMIN" }
+
+### F2. [V4] Assign the same role again — idempotent, still true, no duplicate row
+POST {{v4}}/assignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "roleId": "ADMIN" }
+
+### F3. [V4] Assign role — non-existent user — expect 404
+POST {{v4}}/assignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{nonExistentUser}}", "roleId": "ADMIN" }
+
+### F4. [V4] Assign role — unknown roleId — expect 404
+POST {{v4}}/assignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "roleId": "SUPERUSER" }
+
+### F5. [V4] Unassign a role the user was never given — expect 404
+###      (mike.anderson only ever has AGENT + ADMIN from F1; TRAVELLER was never assigned)
+POST {{v4}}/unassignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "roleId": "TRAVELLER" }
+
+### F6. [V4] Unassign an existing role — expect true
+POST {{v4}}/unassignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userMikeAnderson}}", "roleId": "ADMIN" }
+
+### F7. [V2] Assign role — happy path
+POST {{v2}}/assignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userLauraBennett}}", "roleId": "ADMIN" }
+
+### F8. [V2] Unassign role — happy path
+POST {{v2}}/unassignRole
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "userId": "{{userLauraBennett}}", "roleId": "ADMIN" }

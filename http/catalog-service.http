@@ -1,0 +1,506 @@
+### ==============================================================
+### CatalogService — OData V4 & V2 test scenarios (REST Client)
+### ==============================================================
+### Start the server first:  npx cds watch
+### V4 base: http://localhost:4004/odata/v4/catalog
+### V2 base: http://localhost:4004/odata/v2/catalog  (via @cap-js-community/odata-v2-adapter)
+###
+### AUTH NOTE (verified against a live server):
+### CatalogService requires role 'authenticated-user' on the service,
+### and @restrict roles 'Admin' / 'Traveller' (capitalised) on
+### Travellers & TravelledLocations. Role checks are case-sensitive,
+### and the project ships no custom mock users yet — the CAP default
+### mocked users (alice/bob/carol/dave/erin/fred/me/yves) only carry
+### lowercase 'admin' / 'cds.ExtensionDeveloper' roles, so every
+### @adminUser / @traveller1User / @traveller2User request below will
+### 403 until you add matching mock users. Add a project-root
+### `.cdsrc.json` (untracked, dev-only; not in .gitignore yet — see
+### chat) with:
+###
+### {
+###   "requires": { "auth": { "kind": "mocked", "users": {
+###     "admin":         { "roles": ["Admin"] },
+###     "rohan.sharma":  { "roles": ["Traveller"] },
+###     "emily.johnson": { "roles": ["Traveller"] }
+###   } } }
+### }
+###
+### rohan.sharma / emily.johnson match the `userID` column in
+### db/data/burhan.claude-Travellers.csv, so $user-based row filtering
+### can be exercised for real.
+
+@host = http://localhost:4004
+@v4 = {{host}}/odata/v4/catalog
+@v2 = {{host}}/odata/v2/catalog
+
+@adminUser = admin
+@adminPass = pass
+@traveller1User = rohan.sharma
+@traveller1Pass = pass
+@traveller2User = emily.johnson
+@traveller2Pass = pass
+
+# Traveller 1 = rohan.sharma's own row; Traveller 2 = emily.johnson's own row
+@travellerID = 10000000-0000-4000-8000-000000000001
+@traveller2ID = 10000000-0000-4000-8000-000000000002
+@destinationID = 30000000-0000-4000-8000-000000000001
+@locationID = 40000000-0000-4000-8000-000000000001
+
+
+### ==============================================================
+### A. Destinations — open to any authenticated user; Create + Read
+###    only, Update/Delete rejected with 405 (srv/catalog-service.ts)
+### ==============================================================
+
+### A1. [V4] List all destinations
+GET {{v4}}/Destinations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### A2. [V4] Read one destination
+GET {{v4}}/Destinations({{destinationID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### A3. [V4] Create a destination (any authenticated user)
+# @name createDestinationV4
+POST {{v4}}/Destinations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "name": "Lisbon Coastal Trip",
+  "country": "Portugal",
+  "city": "Lisbon",
+  "region": "Lisbon District",
+  "description": "Coastal towns, trams and pastel de nata tasting."
+}
+
+### A4. [V4] Update destination — expect 405 (immutable per spec 3.4)
+PATCH {{v4}}/Destinations({{destinationID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{ "region": "Changed Region" }
+
+### A5. [V4] Delete destination — expect 405 (immutable per spec 3.4)
+DELETE {{v4}}/Destinations({{destinationID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### A6. [V2] List all destinations
+GET {{v2}}/Destinations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### A7. [V2] Create a destination
+POST {{v2}}/Destinations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "name": "Reykjavik Northern Lights",
+  "country": "Iceland",
+  "city": "Reykjavik",
+  "region": "Capital Region",
+  "description": "Aurora watching and the Golden Circle route."
+}
+
+### A8. [V2] Update destination via MERGE — expect 405
+MERGE {{v2}}/Destinations({{destinationID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{ "region": "Changed Region" }
+
+### A9. [V2] Delete destination — expect 405
+DELETE {{v2}}/Destinations({{destinationID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### A10. [V4] Unauthenticated request — expect 401
+GET {{v4}}/Destinations
+
+
+### ==============================================================
+### B. Value-help code lists — @readonly: TravellerTypes,
+###    TravellerStatus, AddressTypes
+### ==============================================================
+
+### B1. [V4] List traveller types
+GET {{v4}}/TravellerTypes
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### B2. [V4] List traveller status value help
+GET {{v4}}/TravellerStatus
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### B3. [V4] List address types value help
+GET {{v4}}/AddressTypes
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### B4. [V4] Attempt to create a traveller type — expect 405 (@readonly)
+POST {{v4}}/TravellerTypes
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "code": "VIP", "name": "VIP", "descr": "VIP traveller" }
+
+### B5. [V2] List traveller types
+GET {{v2}}/TravellerTypes
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### B6. [V2] Attempt to update a traveller type — expect 405 (@readonly)
+MERGE {{v2}}/TravellerTypes('FF')
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "name": "Changed" }
+
+
+### ==============================================================
+### C. Travellers — Create/Read/Update (no Delete per spec 3.1);
+###    computed fullName, etag concurrency, row-level security
+### ==============================================================
+
+### C1. [V4] Admin reads all travellers
+GET {{v4}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C2. [V4] Traveller reads own row — 200
+GET {{v4}}/Travellers({{travellerID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C3. [V4] Traveller reads someone else's row — expect 404 (row filtered out)
+GET {{v4}}/Travellers({{traveller2ID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C4. [V4] Traveller lists all travellers — only own row comes back
+GET {{v4}}/Travellers
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C5. [V4] Create traveller — missing firstName — expect 400
+POST {{v4}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "Doe",
+  "email": "jane.doe@travelapp.com",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "jane.doe"
+}
+
+### C6. [V4] Create traveller — attempt to set computed fullName — expect 400
+POST {{v4}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "fullName": "Jane Doe",
+  "email": "jane.doe@travelapp.com",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "jane.doe"
+}
+
+### C7. [V4] Create traveller — duplicate email — expect 409
+POST {{v4}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Duplicate",
+  "lastName": "Rohan",
+  "email": "rohan.sharma@travelapp.com",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "duplicate.rohan"
+}
+
+### C8. [V4] Create traveller — happy path — expect 201, fullName enriched on read-back
+# @name createTravellerV4
+POST {{v4}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@travelapp.com",
+  "phone": "+1-555-0100",
+  "addressType_code": "H",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "jane.doe"
+}
+
+### C9. [V4] Filter on computed fullName — expect 400 (blocked by before-READ handler)
+GET {{v4}}/Travellers?$filter=fullName eq 'Rohan Sharma'
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C10. [V4] Sort by computed fullName — expect 400
+GET {{v4}}/Travellers?$orderby=fullName
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C11. [V4] Get own row to capture ETag for optimistic concurrency
+# @name getTravellerV4
+GET {{v4}}/Travellers({{travellerID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C12. [V4] Update without If-Match header — expect 428
+PATCH {{v4}}/Travellers({{travellerID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{ "phone": "+91-90000-00000" }
+
+### C13. [V4] Update own row with captured ETag — expect 200
+PATCH {{v4}}/Travellers({{travellerID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+If-Match: {{getTravellerV4.response.headers.ETag}}
+Content-Type: application/json
+
+{ "phone": "+91-90000-00000" }
+
+### C14. [V4] Traveller tries to update someone else's row — expect 404 (not visible)
+GET {{v4}}/Travellers({{traveller2ID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C15. [V4] Traveller attempts DELETE — expect 403 (not granted to Traveller role)
+DELETE {{v4}}/Travellers({{travellerID}})
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C16. [V4] Admin attempts DELETE — note: @restrict grants Admin '*' so this is
+###      NOT blocked by role, but etag concurrency still applies (expect 428
+###      without If-Match). Spec 3.1 says delete should never be permitted —
+###      this is a gap in the current @restrict config worth flagging.
+DELETE {{v4}}/Travellers({{traveller2ID}})
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C17. [V2] Admin reads all travellers
+GET {{v2}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### C18. [V2] Traveller reads own row
+GET {{v2}}/Travellers(guid'{{travellerID}}')
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C19. [V2] Create traveller — happy path
+POST {{v2}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith.v2@travelapp.com",
+  "phone": "+1-555-0199",
+  "addressType_code": "O",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "john.smith.v2"
+}
+
+### C20. [V2] Get own row to capture ETag (V2 date/time literals differ from V4)
+# @name getTravellerV2
+GET {{v2}}/Travellers(guid'{{travellerID}}')
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### C21. [V2] Update via MERGE without If-Match — expect 428
+MERGE {{v2}}/Travellers(guid'{{travellerID}}')
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{ "phone": "+91-90000-11111" }
+
+### C22. [V2] Update via MERGE with captured ETag — expect 200/204
+MERGE {{v2}}/Travellers(guid'{{travellerID}}')
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+If-Match: {{getTravellerV2.response.headers.ETag}}
+Content-Type: application/json
+
+{ "phone": "+91-90000-11111" }
+
+### C23. [V2] Duplicate email — expect 409
+POST {{v2}}/Travellers
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "firstName": "Duplicate",
+  "lastName": "Emily",
+  "email": "emily.johnson@travelapp.com",
+  "type_code": "STD",
+  "status_code": "A",
+  "userID": "duplicate.emily"
+}
+
+
+### ==============================================================
+### D. TravelledLocations — Create/Read/Delete (no Update);
+###    date-range validation, overlap check, row-level security
+### ==============================================================
+
+### D1. [V4] Admin reads all travelled locations, expanding traveller & destination
+GET {{v4}}/TravelledLocations?$expand=traveller,destination
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### D2. [V4] Traveller reads own travelled locations only
+GET {{v4}}/TravelledLocations?$filter=traveller_ID eq {{travellerID}}
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### D3. [V4] Create — travelFrom after travelTo — expect 400
+POST {{v4}}/TravelledLocations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "traveller_ID": "{{travellerID}}",
+  "destination_ID": "{{destinationID}}",
+  "travelFrom": "2027-01-20",
+  "travelTo": "2027-01-10",
+  "notes": "Invalid date range"
+}
+
+### D4. [V4] Create — overlaps an existing trip for the same traveller — expect 409
+###      (rohan.sharma already has a trip 2026-10-05..2026-10-12, see
+###      db/data/burhan.claude-TravelledLocations.csv)
+POST {{v4}}/TravelledLocations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "traveller_ID": "{{travellerID}}",
+  "destination_ID": "{{destinationID}}",
+  "travelFrom": "2026-10-08",
+  "travelTo": "2026-10-15",
+  "notes": "Overlaps existing Paris trip"
+}
+
+### D5. [V4] Create — happy path, non-overlapping dates — expect 201
+# @name createLocationV4
+POST {{v4}}/TravelledLocations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "traveller_ID": "{{travellerID}}",
+  "destination_ID": "{{destinationID}}",
+  "travelFrom": "2028-01-05",
+  "travelTo": "2028-01-12",
+  "notes": "Follow-up trip, no overlap"
+}
+
+### D6. [V4] Delete a travelled location — expect 204
+DELETE {{v4}}/TravelledLocations({{locationID}})
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### D7. [V4] Update a travelled location — expect 405 (not supported, no handler; generic PATCH allowed unless blocked)
+PATCH {{v4}}/TravelledLocations({{locationID}})
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{ "notes": "Trying to edit an immutable travel log entry" }
+
+### D8. [V2] List with $expand
+GET {{v2}}/TravelledLocations?$expand=traveller,destination
+Authorization: Basic {{adminUser}} {{adminPass}}
+
+### D9. [V2] Create — overlap check — expect 409
+POST {{v2}}/TravelledLocations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "traveller_ID": "{{travellerID}}",
+  "destination_ID": "{{destinationID}}",
+  "travelFrom": "2026-10-06",
+  "travelTo": "2026-10-09",
+  "notes": "Overlaps existing Paris trip (V2)"
+}
+
+### D10. [V2] Delete a travelled location
+POST {{v2}}/TravelledLocations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+Content-Type: application/json
+
+{
+  "traveller_ID": "{{travellerID}}",
+  "destination_ID": "{{destinationID}}",
+  "travelFrom": "2029-02-01",
+  "travelTo": "2029-02-07",
+  "notes": "Created via V2 for delete test"
+}
+
+
+### ==============================================================
+### E. Query options — $filter / $orderby / $expand / $select /
+###    $top / $skip / $count (V4) vs $inlinecount (V2)
+### ==============================================================
+
+### E1. [V4] $select + $top + $skip
+GET {{v4}}/Destinations?$select=name,city,country&$top=3&$skip=2
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E2. [V4] $filter with contains()
+GET {{v4}}/Destinations?$filter=contains(country,'France')
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E3. [V4] $expand nested (Travellers -> locations -> destination)
+GET {{v4}}/Travellers({{travellerID}})?$expand=locations($expand=destination)
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E4. [V4] $count=true inline
+GET {{v4}}/Destinations?$count=true
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E5. [V4] /$count resource
+GET {{v4}}/Destinations/$count
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E6. [V2] $select + $top + $skip
+GET {{v2}}/Destinations?$select=name,city,country&$top=3&$skip=2
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E7. [V2] $filter with substringof (classic V2 filter function)
+GET {{v2}}/Destinations?$filter=substringof('France',country)
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E8. [V2] $inlinecount=allpages
+GET {{v2}}/Destinations?$inlinecount=allpages
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+### E9. [V2] $expand
+GET {{v2}}/Travellers(guid'{{travellerID}}')?$expand=locations
+Authorization: Basic {{traveller1User}} {{traveller1Pass}}
+
+
+### ==============================================================
+### F. $batch — combine multiple reads in one request
+### ==============================================================
+
+### F1. [V4] $batch — JSON batch format with two GETs
+POST {{v4}}/$batch
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: application/json
+
+{
+  "requests": [
+    { "id": "1", "method": "GET", "url": "Destinations" },
+    { "id": "2", "method": "GET", "url": "TravellerTypes" }
+  ]
+}
+
+### F2. [V2] $batch — multipart/mixed batch format with one GET
+POST {{v2}}/$batch
+Authorization: Basic {{adminUser}} {{adminPass}}
+Content-Type: multipart/mixed;boundary=batch_1
+
+--batch_1
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+
+GET Destinations HTTP/1.1
+Accept: application/json
+
+--batch_1--

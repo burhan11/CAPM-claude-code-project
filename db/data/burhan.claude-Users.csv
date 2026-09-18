@@ -1,0 +1,13 @@
+ID;loginName;firstName;lastName;isLocked;createdAt
+50000000-0000-4000-8000-000000000001;superadmin@travelapp.com;Alexandra;Reed;false;2025-11-01T09:00:00Z
+50000000-0000-4000-8000-000000000002;jane.admin@travelapp.com;Jane;Whitfield;false;2025-11-05T09:00:00Z
+50000000-0000-4000-8000-000000000003;mike.anderson@travelapp.com;Mike;Anderson;false;2025-12-01T10:00:00Z
+50000000-0000-4000-8000-000000000004;laura.bennett@travelapp.com;Laura;Bennett;false;2025-12-10T10:00:00Z
+50000000-0000-4000-8000-000000000005;ravi.kapoor@travelapp.com;Ravi;Kapoor;true;2026-01-15T10:00:00Z
+50000000-0000-4000-8000-000000000006;rohan.sharma@travelapp.com;Rohan;Sharma;false;2026-01-15T09:30:00Z
+50000000-0000-4000-8000-000000000007;emily.johnson@travelapp.com;Emily;Johnson;false;2026-01-20T10:15:00Z
+50000000-0000-4000-8000-000000000008;hans.mueller@travelapp.com;Hans;Mueller;false;2026-02-05T08:00:00Z
+50000000-0000-4000-8000-000000000009;sofia.rossi@travelapp.com;Sofia;Rossi;false;2026-02-10T11:45:00Z
+50000000-0000-4000-8000-000000000010;wei.chen@travelapp.com;Wei;Chen;true;2026-02-15T13:20:00Z
+50000000-0000-4000-8000-000000000011;aiko.tanaka@travelapp.com;Aiko;Tanaka;false;2026-03-01T07:50:00Z
+50000000-0000-4000-8000-000000000012;carlos.garcia@travelapp.com;Carlos;Garcia;false;2026-03-10T12:00:00Z

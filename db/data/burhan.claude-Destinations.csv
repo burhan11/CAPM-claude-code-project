@@ -1,16 +1,11 @@
-ID;address;city;postalCode;country;traveller_ID
-30000000-0000-4000-8000-000000000001;12 Rue de Rivoli;Paris;75001;France;10000000-0000-4000-8000-000000000001
-30000000-0000-4000-8000-000000000002;3-1 Shibuya;Tokyo;150-0002;Japan;10000000-0000-4000-8000-000000000001
-30000000-0000-4000-8000-000000000003;350 5th Avenue;New York;10118;United States;10000000-0000-4000-8000-000000000002
-30000000-0000-4000-8000-000000000004;Sheikh Zayed Road;Dubai;00000;United Arab Emirates;10000000-0000-4000-8000-000000000002
-30000000-0000-4000-8000-000000000005;10 Marina Boulevard;Singapore;018956;Singapore;10000000-0000-4000-8000-000000000003
-30000000-0000-4000-8000-000000000006;221B Baker Street;London;NW1 6XE;United Kingdom;10000000-0000-4000-8000-000000000003
-30000000-0000-4000-8000-000000000007;1 Circular Quay;Sydney;2000;Australia;10000000-0000-4000-8000-000000000004
-30000000-0000-4000-8000-000000000008;50 Sukhumvit Road;Bangkok;10110;Thailand;10000000-0000-4000-8000-000000000004
-30000000-0000-4000-8000-000000000009;15 Via del Corso;Rome;00186;Italy;10000000-0000-4000-8000-000000000005
-30000000-0000-4000-8000-000000000010;Jl. Pantai Kuta No.5;Bali;80361;Indonesia;10000000-0000-4000-8000-000000000005
-30000000-0000-4000-8000-000000000011;8 Avenue des Champs-Elysees;Paris;75008;France;10000000-0000-4000-8000-000000000006
-30000000-0000-4000-8000-000000000012;Ginza 4-chome;Tokyo;104-0061;Japan;10000000-0000-4000-8000-000000000007
-30000000-0000-4000-8000-000000000013;1500 Broadway;New York;10036;United States;10000000-0000-4000-8000-000000000008
-30000000-0000-4000-8000-000000000014;1 Burj Khalifa Boulevard;Dubai;00000;United Arab Emirates;10000000-0000-4000-8000-000000000009
-30000000-0000-4000-8000-000000000015;Via del Colosseo 1;Rome;00184;Italy;10000000-0000-4000-8000-000000000010
+ID;name;country;city;region;description
+30000000-0000-4000-8000-000000000001;Paris City Break;France;Paris;Île-de-France;Classic Parisian getaway covering the Louvre, Eiffel Tower and Montmartre.
+30000000-0000-4000-8000-000000000002;Tokyo Cherry Blossom Tour;Japan;Tokyo;Kanto;Springtime tour of Tokyo's parks, temples and modern districts.
+30000000-0000-4000-8000-000000000003;New York City Explorer;United States;New York;New York State;Manhattan sightseeing covering Times Square, Central Park and Broadway.
+30000000-0000-4000-8000-000000000004;Dubai Desert & Skyline;United Arab Emirates;Dubai;Dubai Emirate;Combined desert safari and city skyline experience.
+30000000-0000-4000-8000-000000000005;Singapore Business Hub;Singapore;Singapore;Central Region;Marina Bay business district with leisure options nearby.
+30000000-0000-4000-8000-000000000006;London Heritage Walk;United Kingdom;London;Greater London;Historic London landmarks including the Tower of London and Westminster.
+30000000-0000-4000-8000-000000000007;Sydney Harbour Escape;Australia;Sydney;New South Wales;Sydney Harbour, the Opera House and coastal day trips.
+30000000-0000-4000-8000-000000000008;Bangkok Street Food Safari;Thailand;Bangkok;Bangkok Metropolitan Region;Street food markets, temples and river cruises in Bangkok.
+30000000-0000-4000-8000-000000000009;Rome Ancient Wonders;Italy;Rome;Lazio;Ancient Rome, the Colosseum and the Vatican Museums.
+30000000-0000-4000-8000-000000000010;Bali Beach Getaway;Indonesia;Bali;Bali Province;Beaches, rice terraces and wellness retreats in Bali.

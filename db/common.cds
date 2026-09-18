@@ -17,6 +17,11 @@ entity Roles : sap.common.CodeList {
   key code : String(10) @title: '{i18n>Roles.code}';
 }
 
-type AddressType : Association to AddressTypes;
-type Status      : Association to TravellerStatus;
-type Role        : Association to Roles;
+entity TravellerTypes : sap.common.CodeList {
+  key code : String(10) @title: '{i18n>TravellerTypes.code}';
+}
+
+type AddressType   : Association to AddressTypes;
+type Status        : Association to TravellerStatus;
+type Role          : Association to Roles;
+type TravellerType : Association to TravellerTypes;
