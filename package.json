@@ -22,5 +22,11 @@
   "imports": {
     "#cds-models/*": "./@cds-models/*/index.js"
   },
-  
+  "cds": {
+    "requires": {
+      "auth": {
+        "restrict_all_services": false
+      }
+    }
+  }
 }

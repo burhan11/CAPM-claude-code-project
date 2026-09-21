@@ -13,6 +13,8 @@ service CatalogService @(path: 'catalog') {
   entity AddressTypes       as projection on common.AddressTypes;
 }
 
+// Row-Level Security
+
 annotate CatalogService.Travellers with @restrict: [
   { grant: ['READ', 'UPDATE'], to: 'Traveller', where: 'userID = $user' },
   { grant: '*', to: 'Admin' }
