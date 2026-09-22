@@ -5,7 +5,8 @@
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.16.1",
     "@sap/cds": "^9",
-    "express": "^4"
+    "express": "^4",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/cds-typer": ">=0.1",
@@ -24,8 +25,15 @@
   },
   "cds": {
     "requires": {
-      "auth": {
-        "restrict_all_services": false
+      "[development]": {
+        "auth": {
+          "restrict_all_services": false
+        }
+      },
+      "[production]": {
+        "auth": {
+          "kind": "xsuaa"
+        }
       }
     }
   }

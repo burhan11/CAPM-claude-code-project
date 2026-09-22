@@ -1,0 +1,10 @@
+
+/skill-creator
+ create a skill to review my SAP BTP CAP project
+
+Make sure all the service end points are protected
+Give warning if the xs-security.json file is missing
+Highlight the room for modularization of code
+Check DB design for associations and compositions
+Analyze any flaw in data model or normalization
+Overall check the best practice for CAP applications
