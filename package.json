@@ -14,10 +14,12 @@
     "@cap-js/sqlite": "^2",
     "@types/node": "^24.0.0",
     "tsx": "^4",
-    "typescript": "^7.0.0"
+    "typescript": "^7.0.0",
+    "cds-plugin-ui5": "^0.17.0"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "watch-travellers": "cds watch --open burhan.claude.travellers/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "imports": {
@@ -36,5 +38,11 @@
         }
       }
     }
-  }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/travellers"
+  ]
 }

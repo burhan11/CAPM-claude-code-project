@@ -32,7 +32,7 @@ entity Travellers : cuid {
   locations        : Composition of many TravelledLocations
                        on locations.traveller = $self
                                     @title: '{i18n>Travellers.locations}';
-  modifiedAt       : Timestamp      @cds.on.update: $now  @title: '{i18n>Travellers.modifiedAt}';
+  modifiedAt       : Timestamp      @cds.on.insert: $now  @cds.on.update: $now  @title: '{i18n>Travellers.modifiedAt}';
 }
 
 annotate Travellers with {

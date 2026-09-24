@@ -43,3 +43,10 @@ coverage/
 
 # @cap-js/cds-typer
 @cds-models
+
+# Exported Claude Code chat transcripts
+2026-*-*.txt
+
+# Generated Fiori OPA test journeys
+app/**/webapp/test/**/*.gen.ts
+app/**/webapp/test/**/*.gen.d.ts

@@ -49,24 +49,46 @@ export default (srv: cds.ApplicationService) => {
     else enrichFullName(data);
   });
 
+  // A Traveller may only create locations under their own traveller record
   srv.before('CREATE', TravelledLocations, async (req: cds.Request) => {
+    if (req.user.is('Admin')) return;
     const data = req.data as any;
-    if (!data.travelFrom || !data.travelTo) return;
+    const travellerID = data.traveller_ID ?? data.traveller?.ID;
+    const own = travellerID && await SELECT.one.from(Travellers).columns('ID').where({ ID: travellerID, userID: req.user.id });
+    if (!own) return req.reject(403, 'Travellers can only create their own travelled locations');
+  });
 
-    if (data.travelFrom > data.travelTo) {
+  srv.before(['CREATE', 'UPDATE'], TravelledLocations, async (req: cds.Request) => {
+    const data = req.data as any;
+    const isUpdate = req.event === 'UPDATE';
+    const param = req.params?.at(-1) as any;
+    const key = isUpdate ? (param?.ID ?? param) : undefined;
+
+    // On UPDATE the payload may be partial: merge with the stored row
+    const existing = isUpdate && key ? await SELECT.one.from(TravelledLocations).where({ ID: key }) : undefined;
+    const travelFrom = data.travelFrom ?? existing?.travelFrom;
+    const travelTo = data.travelTo ?? existing?.travelTo;
+    if (!travelFrom || !travelTo) return;
+
+    if (travelFrom > travelTo) {
       return req.error(400, 'Travel start date must be before end date');
     }
 
-    const travellerID = data.traveller_ID ?? data.traveller?.ID;
+    if (isUpdate && data.traveller_ID && existing && data.traveller_ID !== existing.traveller_ID) {
+      return req.error(400, 'Traveller of a travelled location cannot be changed');
+    }
+
+    const travellerID = data.traveller_ID ?? data.traveller?.ID ?? existing?.traveller_ID;
     if (!travellerID) return;
 
     const overlapping = await SELECT.one.from(TravelledLocations).where({
       traveller_ID: travellerID,
-      travelFrom: { '<=': data.travelTo },
-      travelTo: { '>=': data.travelFrom }
+      ...(key ? { ID: { '!=': key } } : {}),
+      travelFrom: { '<=': travelTo },
+      travelTo: { '>=': travelFrom }
     });
     if (overlapping) {
-      return req.error(409, 'Traveller already has a trip during srv date range');
+      return req.error(409, 'Traveller already has a trip during this date range');
     }
   });
 
