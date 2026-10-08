@@ -4,7 +4,7 @@
 import cds from '@sap/cds';
 
 export default (srv: cds.ApplicationService) => {
-  const { Travellers, TravelledLocations, Destinations } = srv.entities;
+  const { Travellers, TravelledLocations } = srv.entities;
 
   srv.before(['CREATE', 'UPDATE'], Travellers, async (req: cds.Request) => {
     const data = req.data as any;
@@ -23,6 +23,16 @@ export default (srv: cds.ApplicationService) => {
       const existing = await SELECT.one.from(Travellers).where({ email: data.email, ID: { '!=': data.ID ?? null } });
       if (existing) return req.error(409, 'Email already registered');
     }
+  });
+
+  // userID is the ownership key: only Admin may change it
+  srv.before('UPDATE', [Travellers, Travellers.drafts], async (req: cds.Request) => {
+    const data = req.data as any;
+    if (!('userID' in data) || req.user.is('Admin')) return;
+    const param = req.params?.at(-1) as any;
+    const key = param?.ID ?? param;
+    const existing = key && await SELECT.one.from(Travellers.drafts).columns('userID').where({ ID: key });
+    if (existing?.userID !== data.userID) return req.reject(403, 'Only Admin can change userID');
   });
 
   srv.before('UPDATE', Travellers, (req: cds.Request) => {
@@ -92,8 +102,6 @@ export default (srv: cds.ApplicationService) => {
     }
   });
 
-  srv.on('UPDATE', Destinations, (req: cds.Request) => req.reject(405, 'Destinations cannot be updated'));
-  srv.on('DELETE', Destinations, (req: cds.Request) => req.reject(405, 'Destinations cannot be deleted'));
 };
 
 

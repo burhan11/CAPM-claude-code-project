@@ -26,14 +26,16 @@ annotate CatalogService.Travellers with @restrict: [
 annotate CatalogService.TravelledLocations with @restrict: [
   // Traveller: full read/create/edit on own locations
   { grant: ['READ', 'CREATE', 'UPDATE'], to: 'Traveller', where: 'traveller.userID = $user' },
-  // Admin: read-only
-  { grant: 'READ', to: 'Admin' }
+  // Admin: full read/create/edit
+  { grant: ['READ', 'CREATE', 'UPDATE'], to: 'Admin' }
 ];
 
-// Destinations: Create + Read is open to any authenticated user (spec 3.4);
-// Update/Delete are explicitly rejected with 405 in catalog-service.ts,
-// since @restrict would short-circuit those verbs with 403 before the
-// handler runs.
+// Destinations: any authenticated user may read; only Admin may create.
+// Update/Delete are never granted (no role has them).
+annotate CatalogService.Destinations with @restrict: [
+  { grant: 'READ', to: 'authenticated-user' },
+  { grant: 'CREATE', to: 'Admin' }
+];
 
 annotate CatalogService.TravellerTypes with @readonly;
 annotate CatalogService.TravellerStatus with @readonly;

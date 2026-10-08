@@ -1,0 +1,31 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="burhan.claude.travellers.login.Login"
+    height="100%">
+    <FlexBox height="100%" alignItems="Center" justifyContent="Center" class="sapUiSmallMargin">
+        <Panel width="22rem" class="sapUiResponsiveContentPadding">
+            <VBox>
+                <Title text="{i18n>loginTitle}" level="H2" textAlign="Center" width="100%"/>
+                <Text text="{i18n>loginSubtitle}" class="sapUiTinyMarginBottom sapUiSmallMarginTop"/>
+                <MessageStrip
+                    id="error"
+                    visible="false"
+                    type="Error"
+                    showIcon="true"
+                    class="sapUiSmallMarginTopBottom"/>
+                <Label text="{i18n>userId}" labelFor="userId" required="true"/>
+                <Input id="userId" autocomplete="username" submit=".onLogin"/>
+                <Label text="{i18n>password}" labelFor="password" required="true" class="sapUiSmallMarginTop"/>
+                <Input id="password" type="Password" autocomplete="current-password" submit=".onLogin"/>
+                <Button
+                    id="loginButton"
+                    text="{i18n>login}"
+                    type="Emphasized"
+                    width="100%"
+                    class="sapUiMediumMarginTop"
+                    press=".onLogin"/>
+            </VBox>
+        </Panel>
+    </FlexBox>
+</mvc:View>

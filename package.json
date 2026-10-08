@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-travellers": "cds watch --open burhan.claude.travellers/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-travellers": "cds watch --open burhan.claude.travellers/login.html --livereload false"
   },
   "private": true,
   "imports": {

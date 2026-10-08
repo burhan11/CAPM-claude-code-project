@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>App Title</title>
+    <title>Travellers</title>
+    <script>
+        // Dev session guard: hide the app until the session is verified, else go to login
+        document.documentElement.style.visibility = "hidden";
+        fetch("/me", { credentials: "same-origin" }).then(function (r) {
+            // only a 401 means "not signed in"; where /me does not exist (production, approuter login) pass through
+            if (r.status === 401) { window.location.replace("login.html"); }
+            else { document.documentElement.style.visibility = ""; }
+        }).catch(function () { document.documentElement.style.visibility = ""; });
+    </script>
     <style>
         html, body, body > div, #container, #container-uiarea {
             height: 100%;
