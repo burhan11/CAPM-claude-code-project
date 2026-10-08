@@ -20,12 +20,12 @@ annotate CatalogService.Travellers with @restrict: [
   // Traveller: edit own record only (no create/delete)
   { grant: ['READ', 'UPDATE'], to: 'Traveller', where: 'userID = $user' },
   // Admin: full create/edit/delete on all travellers
-  { grant: ['READ', 'CREATE', 'UPDATE', 'DELETE'], to: 'Admin' }
+  { grant: ['READ', 'CREATE', 'UPDATE'], to: 'Admin' }
 ];
 
 annotate CatalogService.TravelledLocations with @restrict: [
   // Traveller: full create/edit/delete on own locations
-  { grant: ['READ', 'CREATE', 'UPDATE', 'DELETE'], to: 'Traveller', where: 'traveller.userID = $user' },
+  { grant: ['READ', 'CREATE', 'UPDATE'], to: 'Traveller', where: 'traveller.userID = $user' },
   // Admin: read-only
   { grant: 'READ', to: 'Admin' }
 ];
